@@ -15,7 +15,6 @@ import com.wangsc.loanmanager.R;
 import com.wangsc.loanmanager.fragment.ActionBarFragment;
 import com.wangsc.loanmanager.fragment.AreaFragment;
 import com.wangsc.loanmanager.fragment.HomeFragment;
-import com.wangsc.loanmanager.fragment.StatisticFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,10 +42,10 @@ public class MainActivity extends AppCompatActivity{
                 @Override
                 public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                     switch (item.getItemId()) {
-                        case R.id.navigation_home:
+                        case R.id.navigation_loan:
                             mViewPager.setCurrentItem(0);
                             return true;
-                        case R.id.navigation_area:
+                        case R.id.navigation_statistics:
                             mViewPager.setCurrentItem(1);
                             return true;
                     }

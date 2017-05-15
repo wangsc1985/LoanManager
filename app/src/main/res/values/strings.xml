@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">回商银行</string>
-    <string name="title_home">主页</string>
+    <string name="title_loan">贷款</string>
     <string name="title_dashboard">乡镇</string>
-    <string name="title_notifications">统计</string>
+    <string name="title_statistics">统计</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
