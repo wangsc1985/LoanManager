@@ -20,9 +20,61 @@ public class Borrower {
     /**
      * 地址：省、市、县、镇、村
      */
-    private Adress adress;
+    private Address address;
     /**
      * 联系电话
      */
     private String phone;
+
+    public Borrower(UUID id) {
+        this.id = id;
+    }
+
+    public Borrower(UUID id, String identity, String name, Address address, String phone) {
+        this.id = id;
+        this.identity = identity;
+        this.name = name;
+        this.address = address;
+        this.phone = phone;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public String getIdentity() {
+        return identity;
+    }
+
+    public void setIdentity(String identity) {
+        this.identity = identity;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 }

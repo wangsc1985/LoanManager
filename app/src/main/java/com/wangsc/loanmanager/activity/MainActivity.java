@@ -54,7 +54,6 @@ public class MainActivity extends AppCompatActivity{
             });
 
 
-
             fragmentList = new ArrayList<>();
             fragmentList.add(new HomeFragment());
             fragmentList.add(new AreaFragment());

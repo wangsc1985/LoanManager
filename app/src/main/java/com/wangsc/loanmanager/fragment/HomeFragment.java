@@ -9,17 +9,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 
 import com.wangsc.loanmanager.R;
 import com.wangsc.loanmanager.activity.AddLoanActivity;
-import com.wangsc.loanmanager.activity.BasicActivity;
 import com.wangsc.loanmanager.activity.LeftNavigationActivity;
-import com.wangsc.loanmanager.activity.LoginActivity;
-import com.wangsc.loanmanager.activity.MapsActivity;
 import com.wangsc.loanmanager.activity.ScrollingActivity;
-import com.wangsc.loanmanager.activity.TabbedActivity;
 import com.wangsc.loanmanager.helper._Helper;
+
+import java.util.UUID;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -48,17 +45,11 @@ public class HomeFragment extends Fragment {
             fabCreate.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startActivity(new Intent(getActivity(), AddLoanActivity.class));
+                    Intent intent = new Intent(getActivity(), AddLoanActivity.class);
+                    intent.putExtra(AddLoanActivity.PARAM_LOAN_GROUP_ID, UUID.randomUUID().toString());
+                    startActivity(intent);
                 }
             });
-            Button buttonBasic = (Button)view.findViewById(R.id.button_basic);
-            buttonBasic.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startActivity(new Intent(getActivity(), BasicActivity.class));
-                }
-            });
-
             Button buttonCreate = (Button)view.findViewById(R.id.button_create);
             buttonCreate.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -78,27 +69,11 @@ public class HomeFragment extends Fragment {
                 }
             });
 
-            Button buttonMaps = (Button)view.findViewById(R.id.button_maps);
-            buttonMaps.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startActivity(new Intent(getActivity(), MapsActivity.class));
-                }
-            });
-
             Button buttonScrolling = (Button)view.findViewById(R.id.button_scrolling);
             buttonScrolling.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     startActivity(new Intent(getActivity(), ScrollingActivity.class));
-                }
-            });
-
-            Button buttonTabbed = (Button)view.findViewById(R.id.button_tabbed);
-            buttonTabbed.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startActivity(new Intent(getActivity(), TabbedActivity.class));
                 }
             });
         } catch (Exception e) {

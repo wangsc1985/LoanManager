@@ -1,8 +1,8 @@
 package com.wangsc.loanmanager.activity;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -13,28 +13,35 @@ import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.text.Editable;
 import android.text.TextUtils;
-import android.view.KeyEvent;
+import android.text.TextWatcher;
+import android.text.method.PasswordTransformationMethod;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.UUID;
 
 import com.wangsc.loanmanager.R;
 import com.wangsc.loanmanager.fragment.ActionBarFragment;
+import com.wangsc.loanmanager.helper.DateTime;
 import com.wangsc.loanmanager.helper._Helper;
+import com.wangsc.loanmanager.helper._String;
+import com.wangsc.loanmanager.model.Address;
+import com.wangsc.loanmanager.model.Borrower;
+import com.wangsc.loanmanager.model.Loan;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -43,28 +50,22 @@ import static android.Manifest.permission.READ_CONTACTS;
  */
 public class AddLoanActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
-    /**
-     * Id to identity READ_CONTACTS permission request.
-     */
-    private static final int REQUEST_READ_CONTACTS = 0;
 
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
-    private UserLoginTask mAuthTask = null;
+    // 视图
+    private AutoCompleteTextView autoCompleteName, autoCompleteProvince, autoCompleteCity, autoCompleteCounty, autoCompleteTown, autoCompleteVillage;
+    private EditText editTextType, editTextDate, editTextMoney, editTextLife, editTextIdentity, editTextPhone;
+    private TextView textViewMoneyChinese;
 
-    // UI references.
-    private AutoCompleteTextView mEmailView;
-    private EditText mPasswordView;
-    private View mProgressView;
-    private View mLoginFormView;
+    private Loan loan;
+    private Borrower borrower;
+    private Address address;
+    private UUID loanGroupId;
+
+    public static String PARAM_LOAN_GROUP_ID = "LOAN_GROUP_ID";
+
+
+    private static final int REQUEST_READ_CONTACTS = 114;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +74,70 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
             setContentView(R.layout.activity_add_loan);
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment, ActionBarFragment.newInstance()).commit();
             getSupportActionBar().hide();
+
+            loanGroupId = UUID.fromString(getIntent().getStringExtra(PARAM_LOAN_GROUP_ID));
+
+            borrower = new Borrower(UUID.randomUUID());
+            loan = new Loan(UUID.randomUUID());
+            loan.setBorrowerId(borrower.getId());
+            address = new Address(UUID.randomUUID());
+
+            textViewMoneyChinese = (TextView) findViewById(R.id.textView_money_chinese);
+            editTextMoney = (EditText) findViewById(R.id.money);
+            editTextMoney.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                    String text = editTextMoney.getText().toString();
+                    if (text.isEmpty()) {
+                        textViewMoneyChinese.setVisibility(View.GONE);
+                        textViewMoneyChinese.setText("");
+                    } else {
+                        textViewMoneyChinese.setVisibility(View.VISIBLE);
+                        textViewMoneyChinese.setText(_String.CmycurD(editTextMoney.getText().toString()));
+                    }
+                }
+            });
+
+            editTextLife = (EditText) findViewById(R.id.life);
+//            editTextLife.setFocusable(false);
+            editTextLife.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        setLifeDialog(12);
+                    }
+                    return true;
+                }
+            });
+
+            editTextLife.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                }
+            });
+
+            editTextDate = (EditText) findViewById(R.id.date);
+//            editTextDate.setFocusable(false);
+            editTextDate.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                        setDateDialog(new DateTime());
+                    }
+                    return true;
+                }
+            });
 //            // Set up the login form.
 //            mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
 //            populateAutoComplete();
@@ -82,7 +147,7 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
 //                @Override
 //                public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
 //                    if (id == R.id.login || id == EditorInfo.IME_NULL) {
-//                        attemptLogin();
+//                        attemptCreate();
 //                        return true;
 //                    }
 //                    return false;
@@ -93,15 +158,21 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
 //            mEmailSignInButton.setOnClickListener(new OnClickListener() {
 //                @Override
 //                public void onClick(View view) {
-//                    attemptLogin();
+//                    attemptCreate();
 //                }
 //            });
 //
 //            mLoginFormView = findViewById(R.id.login_form);
 //            mProgressView = findViewById(R.id.login_progress);
         } catch (Exception e) {
-            _Helper.printException(this,e);
+            _Helper.printException(this, e);
         }
+    }
+
+    private String money2Chinese(double money){
+        String result = "";
+
+        return result;
     }
 
     private void populateAutoComplete() {
@@ -120,7 +191,7 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
             return true;
         }
         if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(mEmailView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
+            Snackbar.make(editTextDate, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
                     .setAction(android.R.string.ok, new View.OnClickListener() {
                         @Override
                         @TargetApi(Build.VERSION_CODES.M)
@@ -149,102 +220,55 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
 
 
     /**
-     * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
-     * errors are presented and no actual login attempt is made.
+     * 验证数据，并在数据全部有效的前提下，将数据存入数据库。
      */
-    private void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
+    private void attemptCreate() {
 
-        // Reset errors.
-        mEmailView.setError(null);
-        mPasswordView.setError(null);
-
-        // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
-
+//        // Reset errors.
+//        mEmailView.setError(null);
+//        mPasswordView.setError(null);
+//
+//        // TODO: 2017/5/16 获取数据字段内容。
+//        String email = mEmailView.getText().toString();
+//        String password = mPasswordView.getText().toString();
+//
         boolean cancel = false;
         View focusView = null;
-
-        // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
-            cancel = true;
-        }
-
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
-            cancel = true;
-        } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
-            cancel = true;
-        }
+//
+//        // Check for a valid password, if the user entered one.
+//        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+//            mPasswordView.setError(getString(R.string.error_invalid_password));
+//            focusView = mPasswordView;
+//            cancel = true;
+//        }
+//
+//        // Check for a valid email address.
+//        if (TextUtils.isEmpty(email)) {
+//            mEmailView.setError(getString(R.string.error_field_required));
+//            focusView = mEmailView;
+//            cancel = true;
+//        } else if (!isEmailValid(email)) {
+//            mEmailView.setError(getString(R.string.error_invalid_email));
+//            focusView = mEmailView;
+//            cancel = true;
+//        }
 
         if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
+            // 经过验证之后，字段数据有错误，将定位到有错误的字段输入框。
             focusView.requestFocus();
         } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
-            showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
+            // TODO: 2017/5/16 所有字段验证完成，将数据存入数据库。
         }
     }
 
     private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
         return email.contains("@");
     }
 
     private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
         return password.length() > 4;
     }
 
-    /**
-     * Shows the progress UI and hides the login form.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    private void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
-
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-        }
-    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
@@ -272,7 +296,7 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
             cursor.moveToNext();
         }
 
-        addEmailsToAutoComplete(emails);
+        addNameToAutoComplete(emails);
     }
 
     @Override
@@ -280,13 +304,13 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
 
     }
 
-    private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
+    private void addNameToAutoComplete(List<String> emailAddressCollection) {
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<>(AddLoanActivity.this,
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
-        mEmailView.setAdapter(adapter);
+        autoCompleteName.setAdapter(adapter);
     }
 
 
@@ -300,61 +324,169 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
         int IS_PRIMARY = 1;
     }
 
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final String mEmail;
-        private final String mPassword;
+    public void setDateDialog(DateTime dateTime) {
 
-        UserLoginTask(String email, String password) {
-            mEmail = email;
-            mPassword = password;
-        }
+        try {
+            View view = View.inflate(this, R.layout.inflate_dialog_date_picker, null);
+            final AlertDialog dialog = new AlertDialog.Builder(this).setView(view).create();
+            dialog.setTitle("设定借款日期");
 
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
+            final int year = dateTime.getYear();
+            int month = dateTime.getMonth();
+            int day = dateTime.getDay();
 
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
+            String[] yearNumbers = new String[11];
+            for (int i = year - 10; i <= year; i++) {
+                yearNumbers[i - year + 10] = i + "年";
             }
+            String[] monthNumbers = new String[12];
+            for (int i = 0; i < 12; i++) {
+                monthNumbers[i] = i + 1 + "月";
+            }
+            String[] dayNumbers = new String[31];
+            for (int i = 0; i < 31; i++) {
+                dayNumbers[i] = i + 1 + "日";
+            }
+            final NumberPicker npYear = (NumberPicker) view.findViewById(R.id.npYear);
+            final NumberPicker npMonth = (NumberPicker) view.findViewById(R.id.npMonth);
+            final NumberPicker npDay = (NumberPicker) view.findViewById(R.id.npDay);
+            npYear.setMinValue(year - 10);
+            npYear.setMaxValue(year);
+            npYear.setValue(year);
+            npYear.setDisplayedValues(yearNumbers);
+            npYear.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS); // 禁止对话框打开后数字选择框被选中
+            npMonth.setMinValue(1);
+            npMonth.setMaxValue(12);
+            npMonth.setDisplayedValues(monthNumbers);
+            npMonth.setValue(month + 1);
+            npMonth.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS); // 禁止对话框打开后数字选择框被选中
+            npDay.setMinValue(1);
+            npDay.setMaxValue(31);
+            npDay.setDisplayedValues(dayNumbers);
+            npDay.setValue(day);
+            npDay.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS); // 禁止对话框打开后数字选择框被选中
 
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
+            npMonth.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                @Override
+                public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                    DateTime selected = new DateTime(npYear.getValue(), npMonth.getValue() - 1, 1);
+                    int max = selected.getActualMaximum(Calendar.DAY_OF_MONTH);
+
+                    int day = npDay.getValue();
+                    npDay.setMaxValue(max);
+                    if (day > max) {
+                        npDay.setValue(1);
+                    } else {
+                        npDay.setValue(day);
+                    }
                 }
+            });
+
+            dialog.setButton(DialogInterface.BUTTON_POSITIVE, "确定", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    try {
+                        int y = npYear.getValue();
+                        int m = npMonth.getValue() - 1;
+                        int d = npDay.getValue();
+                        DateTime selectedDateTime = new DateTime(y, m, d, 0, 0, 0);
+                        loan.setDate(selectedDateTime);
+                        editTextDate.setText(selectedDateTime.toShortDateString());
+                        dialog.dismiss();
+                    } catch (Exception e) {
+                        _Helper.printException(AddLoanActivity.this, e);
+                    }
+                }
+            });
+            dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    try {
+                        dialog.dismiss();
+                    } catch (Exception e) {
+                        _Helper.printException(AddLoanActivity.this, e);
+                    }
+                }
+            });
+            dialog.show();
+        } catch (Exception e) {
+            _Helper.printException(AddLoanActivity.this, e);
+        }
+    }
+
+    public void setLifeDialog(int totalMonth) {
+
+        try {
+            View view = View.inflate(this, R.layout.inflate_dialog_date_picker, null);
+            final AlertDialog dialog = new AlertDialog.Builder(this).setView(view).create();
+            dialog.setTitle("设定借款期限");
+
+            final int year = totalMonth / 12;
+            int month = totalMonth % 12;
+
+            String[] yearNumbers = new String[5];
+            for (int i = 0; i < 5; i++) {
+                yearNumbers[i] = i + 1 + "年";
             }
-
-            // TODO: register the new account here.
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-            showProgress(false);
-
-            if (success) {
-                finish();
-            } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
+            String[] monthNumbers = new String[12];
+            for (int i = 0; i < 12; i++) {
+                monthNumbers[i] = i + "个月";
             }
-        }
+            final NumberPicker npYear = (NumberPicker) view.findViewById(R.id.npYear);
+            final NumberPicker npMonth = (NumberPicker) view.findViewById(R.id.npMonth);
+            final NumberPicker npDay = (NumberPicker) view.findViewById(R.id.npDay);
+            npYear.setMinValue(1);
+            npYear.setMaxValue(5);
+            npYear.setValue(year);
+            npYear.setDisplayedValues(yearNumbers);
+            npYear.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS); // 禁止对话框打开后数字选择框被选中
+            npMonth.setMinValue(0);
+            npMonth.setMaxValue(11);
+            npMonth.setDisplayedValues(monthNumbers);
+            npMonth.setValue(month);
+            npMonth.setDescendantFocusability(NumberPicker.FOCUS_BLOCK_DESCENDANTS); // 禁止对话框打开后数字选择框被选中
+            npDay.setVisibility(View.GONE);
 
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            showProgress(false);
+            dialog.setButton(DialogInterface.BUTTON_POSITIVE, "确定", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    try {
+                        int y = npYear.getValue();
+                        int m = npMonth.getValue();
+                        loan.setLife(y * 12 + m);
+                        editTextLife.setText(lifeInt2String(y, m));
+                        dialog.dismiss();
+                    } catch (Exception e) {
+                        _Helper.printException(AddLoanActivity.this, e);
+                    }
+                }
+            });
+            dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    try {
+                        dialog.dismiss();
+                    } catch (Exception e) {
+                        _Helper.printException(AddLoanActivity.this, e);
+                    }
+                }
+            });
+            dialog.show();
+        } catch (Exception e) {
+            _Helper.printException(AddLoanActivity.this, e);
         }
+    }
+
+    private String lifeInt2String(int year, int month) {
+        String result = "";
+        if (year > 0) {
+            result += year + "年";
+        }
+        if (month > 0) {
+            result += month + "个月";
+        }
+        return result;
     }
 }
 
