@@ -184,8 +184,9 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
                                 if (text.contains("年")) {
                                     month += 12 * Integer.parseInt(text.substring(0, text.indexOf("年")));
                                 }
-                                if (text.contains("月")) {
-                                    month += Integer.parseInt(text.substring(text.indexOf("年") + 1, text.indexOf("月")));
+                                if (text.contains("个月")) {
+                                    String aaa = text.substring(text.indexOf("年") + 1, text.indexOf("个月"));
+                                    month += Integer.parseInt(text.substring(text.indexOf("年") + 1, text.indexOf("个月")));
                                 }
                                 setLifeDialog(month);
                             } catch (NumberFormatException e) {
@@ -285,6 +286,7 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
                 }
             });
 
+            setFocus(editTextDate);
 
 //            // Set up the login form.
 //            mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
