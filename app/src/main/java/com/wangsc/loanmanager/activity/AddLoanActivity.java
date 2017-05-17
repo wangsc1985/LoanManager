@@ -18,9 +18,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.Editable;
+import android.text.Selection;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -62,6 +64,7 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
     private UUID loanGroupId;
 
     public static String PARAM_LOAN_GROUP_ID = "LOAN_GROUP_ID";
+    private static String moneyText = "";
 
 
     private static final int REQUEST_READ_CONTACTS = 114;
@@ -84,6 +87,14 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
 
             textViewMoneyChinese = (TextView) findViewById(R.id.textView_money_chinese);
             editTextMoney = (EditText) findViewById(R.id.money);
+            editTextMoney.setOnKeyListener(new View.OnKeyListener() {
+                @Override
+                public boolean onKey(View v, int keyCode, KeyEvent event) {
+                    if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    }
+                    return false;
+                }
+            });
             editTextMoney.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -99,12 +110,20 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
                 public void afterTextChanged(Editable s) {
 
                     String text = editTextMoney.getText().toString();
+                    if (!moneyText.equals(text)) {
+                        String word = _String.addComma(editTextMoney);
+                        moneyText = word;
+                        editTextMoney.setText(word);
+                        editTextMoney.setSelection(word.length());
+                    }
+
+
                     if (text.isEmpty()) {
                         textViewMoneyChinese.setVisibility(View.GONE);
                         textViewMoneyChinese.setText("");
                     } else {
                         textViewMoneyChinese.setVisibility(View.VISIBLE);
-                        textViewMoneyChinese.setText(_String.CmycurD(editTextMoney.getText().toString()));
+                        textViewMoneyChinese.setText(_String.CmycurD(editTextMoney.getText().toString().replace(",","")));
                     }
                 }
             });
@@ -169,7 +188,7 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
         }
     }
 
-    private String money2Chinese(double money){
+    private String money2Chinese(double money) {
         String result = "";
 
         return result;

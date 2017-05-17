@@ -14,37 +14,32 @@ public class _String {
     /**
      * 在数字型字符串千分位加逗号
      *
-     * @param str
      * @param edtext
      * @return sb.toString()
      */
-    public static String addComma(String str, EditText edtext) {
+    public static String addComma(EditText edtext) {
+        String valueStr =edtext.getText().toString().replace(",", "");
+        if(valueStr.isEmpty())
+            return "";
 
-        touzi_ed_values22 = edtext.getText().toString().trim().replaceAll(",", "");
+        String valueStr1 ="";
+        String valueStr2 ="";
+        if(valueStr.contains(".")){
+            valueStr1 = valueStr.substring(0, valueStr.indexOf("."));
+            valueStr2 = valueStr.substring(valueStr.indexOf("."), valueStr.length());
+        }else{
+            valueStr1 = valueStr;
+        }
 
-        boolean neg = false;
-        if (str.startsWith("-")) {  //处理负数
-            str = str.substring(1);
-            neg = true;
+        StringBuilder result = new StringBuilder();
+        int count = 0;
+        for (int i = valueStr1.length() - 1; i >= 0; i--) {
+            result.append(valueStr1.charAt(i));
+            if(++count%3==0&&count<valueStr1.length()){
+                result.append(",");
+            }
         }
-        String tail = null;
-        if (str.indexOf('.') != -1) { //处理小数点
-            tail = str.substring(str.indexOf('.'));
-            str = str.substring(0, str.indexOf('.'));
-        }
-        StringBuilder sb = new StringBuilder(str);
-        sb.reverse();
-        for (int i = 3; i < sb.length(); i += 4) {
-            sb.insert(i, ',');
-        }
-        sb.reverse();
-        if (neg) {
-            sb.insert(0, '-');
-        }
-        if (tail != null) {
-            sb.append(tail);
-        }
-        return sb.toString();
+        return result.reverse().toString()+valueStr2;
     }
 
 
@@ -120,7 +115,7 @@ public class _String {
 
         //循环取出每一位需要转换的值
         for (i = 0; i < j; i++) {
-            str3 = str4.substring(i, i+1);          //取出需转换的某一位的值
+            str3 = str4.substring(i, i + 1);          //取出需转换的某一位的值
             temp = Integer.parseInt(str3);      //转换为数字
             if (i != (j - 3) && i != (j - 7) && i != (j - 11) && i != (j - 15)) {
                 //当所取位数不为元、万、亿、万亿上的数字时
@@ -130,25 +125,25 @@ public class _String {
                     nzero = nzero + 1;
                 } else {
                     if (str3 != "0" && nzero != 0) {
-                        ch1 = "零" + str1.substring(temp * 1, temp * 1+1);
-                        ch2 = str2.substring(i, i+1);
+                        ch1 = "零" + str1.substring(temp * 1, temp * 1 + 1);
+                        ch2 = str2.substring(i, i + 1);
                         nzero = 0;
                     } else {
-                        ch1 = str1.substring(temp * 1, temp * 1+1);
-                        ch2 = str2.substring(i, i+1);
+                        ch1 = str1.substring(temp * 1, temp * 1 + 1);
+                        ch2 = str2.substring(i, i + 1);
                         nzero = 0;
                     }
                 }
             } else {
                 //该位是万亿，亿，万，元位等关键位
                 if (str3 != "0" && nzero != 0) {
-                    ch1 = "零" + str1.substring(temp * 1, temp * 1+1);
-                    ch2 = str2.substring(i, i+1);
+                    ch1 = "零" + str1.substring(temp * 1, temp * 1 + 1);
+                    ch2 = str2.substring(i, i + 1);
                     nzero = 0;
                 } else {
                     if (str3 != "0" && nzero == 0) {
-                        ch1 = str1.substring(temp * 1, temp * 1+1);
-                        ch2 = str2.substring(i, i+1);
+                        ch1 = str1.substring(temp * 1, temp * 1 + 1);
+                        ch2 = str2.substring(i, i + 1);
                         nzero = 0;
                     } else {
                         if (str3 == "0" && nzero >= 3) {
@@ -161,7 +156,7 @@ public class _String {
                                 nzero = nzero + 1;
                             } else {
                                 ch1 = "";
-                                ch2 = str2.substring(i, i+1);
+                                ch2 = str2.substring(i, i + 1);
                                 nzero = nzero + 1;
                             }
                         }
@@ -170,7 +165,7 @@ public class _String {
             }
             if (i == (j - 11) || i == (j - 3)) {
                 //如果该位是亿位或元位，则必须写上
-                ch2 = str2.substring(i, i+1);
+                ch2 = str2.substring(i, i + 1);
             }
             str5 = str5 + ch1 + ch2;
 
