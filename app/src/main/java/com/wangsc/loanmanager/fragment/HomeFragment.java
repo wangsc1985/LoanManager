@@ -36,6 +36,9 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_home, container, false);
 
+        Intent intent = new Intent(getActivity(), AddLoanActivity.class);
+        intent.putExtra(AddLoanActivity.PARAM_LOAN_GROUP_ID, UUID.randomUUID().toString());
+        startActivity(intent);
 
         try {
             /**

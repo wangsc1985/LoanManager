@@ -11,23 +11,49 @@ public class _String {
 
     public static String touzi_ed_values22 = "";
 
+    public static String toCardNumberFormat(EditText edtext){
+
+        String valueStr = edtext.getText().toString().replace(" ", "");
+
+        if (valueStr.isEmpty())
+            return "";
+
+        StringBuilder result = new StringBuilder();
+        int count = 0;
+        for (int i = 0;i<valueStr.length() ; i++) {
+            result.append(valueStr.charAt(i));
+            if (++count % 4 == 0) {
+                result.append(" ");
+            }
+        }
+
+        return result.toString();
+    }
+
     /**
      * 在数字型字符串千分位加逗号
      *
      * @param edtext
      * @return sb.toString()
      */
-    public static String addComma(EditText edtext) {
-        String valueStr =edtext.getText().toString().replace(",", "");
-        if(valueStr.isEmpty())
-            return "";
+    public static String toMoneyFormat(EditText edtext) {
 
-        String valueStr1 ="";
-        String valueStr2 ="";
-        if(valueStr.contains(".")){
+        String valueStr = edtext.getText().toString().replace(",", "");
+
+        if (valueStr.isEmpty())
+            return "";
+        try {
+            Double.parseDouble(valueStr);
+        } catch (Exception e) {
+            return valueStr;
+        }
+
+        String valueStr1 = "";
+        String valueStr2 = "";
+        if (valueStr.contains(".")) {
             valueStr1 = valueStr.substring(0, valueStr.indexOf("."));
             valueStr2 = valueStr.substring(valueStr.indexOf("."), valueStr.length());
-        }else{
+        } else {
             valueStr1 = valueStr;
         }
 
@@ -35,11 +61,11 @@ public class _String {
         int count = 0;
         for (int i = valueStr1.length() - 1; i >= 0; i--) {
             result.append(valueStr1.charAt(i));
-            if(++count%3==0&&count<valueStr1.length()){
+            if (++count % 3 == 0 && count < valueStr1.length()) {
                 result.append(",");
             }
         }
-        return result.reverse().toString()+valueStr2;
+        return result.reverse().toString() + valueStr2;
     }
 
 

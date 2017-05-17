@@ -65,9 +65,11 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="类型"
+                            android:imeOptions="actionNext"
                             android:inputType="text"
                             android:selectAllOnFocus="true"
-                            android:text="农户联保小额贷款" />
+                            android:text="农户联保小额贷款"
+                            tools:nextFocusForward="@+id/date" />
                     </android.support.design.widget.TextInputLayout>
 
 
@@ -80,8 +82,10 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="日期"
+                            android:imeOptions="actionNext"
                             android:inputType="phone"
                             android:maxLines="1"
+                            android:nextFocusForward="@+id/amount"
                             android:selectAllOnFocus="true" />
 
                     </android.support.design.widget.TextInputLayout>
@@ -102,9 +106,11 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="金额"
+                            android:imeOptions="actionNext"
                             android:inputType="numberDecimal"
-                            android:selectAllOnFocus="true"
-                            android:maxLines="1" />
+                            android:maxLines="1"
+                            android:nextFocusForward="@+id/life"
+                            android:selectAllOnFocus="true" />
                     </android.support.design.widget.TextInputLayout>
 
                     <android.support.design.widget.TextInputLayout
@@ -116,9 +122,26 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="周期"
+                            android:imeOptions="actionNext"
+                            android:inputType="text"
+                            android:maxLines="1"
+                            android:nextFocusForward="@+id/account"
+                            android:selectAllOnFocus="true" />
+                    </android.support.design.widget.TextInputLayout>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <EditText
+                            android:id="@+id/account"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="还款账号"
                             android:inputType="number"
-                            android:selectAllOnFocus="true"
-                            android:maxLines="1" />
+                            android:maxLines="1"
+                            android:nextFocusForward="@+id/name"
+                            android:selectAllOnFocus="true" />
                     </android.support.design.widget.TextInputLayout>
 
                 </LinearLayout>
@@ -143,9 +166,11 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="姓名"
+                            android:imeOptions="actionNext"
                             android:inputType="text"
                             android:maxLines="1"
-                            android:selectAllOnFocus="true"/>
+                            android:nextFocusForward="@+id/identity"
+                            android:selectAllOnFocus="true" />
 
                     </android.support.design.widget.TextInputLayout>
 
@@ -158,8 +183,10 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="身份证号"
+                            android:imeOptions="actionNext"
                             android:inputType="phone"
                             android:maxLines="1"
+                            android:nextFocusForward="@+id/city"
                             android:selectAllOnFocus="true" />
                     </android.support.design.widget.TextInputLayout>
 
@@ -181,7 +208,9 @@
                                 android:layout_weight="1"
                                 android:gravity="right"
                                 android:hint="省"
+                                android:imeOptions="actionNext"
                                 android:inputType="text"
+                                android:nextFocusForward="@+id/city"
                                 android:selectAllOnFocus="true"
                                 android:text="宁夏" />
 
@@ -200,7 +229,9 @@
                                 android:layout_weight="1"
                                 android:gravity="right"
                                 android:hint="市"
+                                android:imeOptions="actionNext"
                                 android:inputType="text"
+                                android:nextFocusForward="@+id/county"
                                 android:selectAllOnFocus="true" />
 
                         </android.support.design.widget.TextInputLayout>
@@ -217,7 +248,9 @@
                                 android:layout_weight="1"
                                 android:gravity="right"
                                 android:hint="县"
+                                android:imeOptions="actionNext"
                                 android:inputType="text"
+                                android:nextFocusForward="@+id/town"
                                 android:selectAllOnFocus="true" />
 
                         </android.support.design.widget.TextInputLayout>
@@ -234,7 +267,9 @@
                                 android:layout_weight="1"
                                 android:gravity="right"
                                 android:hint="镇"
+                                android:imeOptions="actionNext"
                                 android:inputType="text"
+                                android:nextFocusForward="@+id/village"
                                 android:selectAllOnFocus="true" />
 
                         </android.support.design.widget.TextInputLayout>
@@ -251,7 +286,9 @@
                                 android:layout_weight="1"
                                 android:gravity="right"
                                 android:hint="村"
+                                android:imeOptions="actionNext"
                                 android:inputType="text"
+                                android:nextFocusForward="@+id/phone"
                                 android:selectAllOnFocus="true" />
                         </android.support.design.widget.TextInputLayout>
 
@@ -266,6 +303,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="联系电话"
+                            android:imeOptions="actionDone"
                             android:inputType="phone"
                             android:maxLines="1"
                             android:selectAllOnFocus="true" />

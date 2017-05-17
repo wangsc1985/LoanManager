@@ -2,6 +2,7 @@ package com.wangsc.loanmanager.activity;
 
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
@@ -20,8 +21,8 @@ import android.provider.ContactsContract;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
@@ -54,7 +55,7 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
 
     // 视图
     private AutoCompleteTextView autoCompleteName, autoCompleteProvince, autoCompleteCity, autoCompleteCounty, autoCompleteTown, autoCompleteVillage;
-    private EditText editTextType, editTextDate, editTextAmount, editTextLife, editTextIdentity, editTextPhone;
+    private EditText editTextType, editTextDate, editTextAmount, editTextLife, editTextAccount, editTextIdentity, editTextPhone;
     private TextView textViewAmountCN;
 
     private Loan loan;
@@ -84,6 +85,20 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
             loan.setBorrowerId(borrower.getId());
             address = new Address(UUID.randomUUID());
 
+            editTextType = (EditText) findViewById(R.id.type);
+            editTextAmount = (EditText) findViewById(R.id.amount);
+            editTextAccount = (EditText) findViewById(R.id.account);
+            editTextIdentity = (EditText) findViewById(R.id.identity);
+            editTextPhone = (EditText) findViewById(R.id.phone);
+            autoCompleteName = (AutoCompleteTextView) findViewById(R.id.name);
+            autoCompleteProvince = (AutoCompleteTextView) findViewById(R.id.province);
+            autoCompleteCity = (AutoCompleteTextView) findViewById(R.id.city);
+            autoCompleteCounty = (AutoCompleteTextView) findViewById(R.id.county);
+            autoCompleteTown = (AutoCompleteTextView) findViewById(R.id.town);
+            autoCompleteCity = (AutoCompleteTextView) findViewById(R.id.city);
+            autoCompleteVillage = (AutoCompleteTextView) findViewById(R.id.village);
+
+
             textViewAmountCN = (TextView) findViewById(R.id.textView_money_cn);
             editTextAmount = (EditText) findViewById(R.id.amount);
             editTextAmount.setOnKeyListener(new View.OnKeyListener() {
@@ -108,34 +123,61 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
                 @Override
                 public void afterTextChanged(Editable s) {
 
+
+                    String valueStr = editTextAmount.getText().toString().replace(",", "");
+
+                    //
+                    // 验证是否为数字
+                    try {
+                        if (!valueStr.isEmpty())
+                            Double.parseDouble(valueStr);
+                    } catch (NumberFormatException e) {
+                        Snackbar.make(editTextDate, "金额必须为数字。", Snackbar.LENGTH_LONG).show();
+                        editTextAmount.setText("");
+                        return;
+                    }
+
+
+                    //
+                    // 加千分位分隔符
                     String text = editTextAmount.getText().toString();
                     if (!moneyText.equals(text)) {
-                        String word = _String.addComma(editTextAmount);
+                        String word = _String.toMoneyFormat(editTextAmount);
                         moneyText = word;
                         editTextAmount.setText(word);
                         editTextAmount.setSelection(word.length());
                     }
 
 
+                    //
+                    // 人民币大写
                     if (text.isEmpty()) {
                         textViewAmountCN.setVisibility(View.GONE);
                         textViewAmountCN.setText("");
                     } else {
                         textViewAmountCN.setVisibility(View.VISIBLE);
-                        textViewAmountCN.setText(NumberToCN.number2CNMontrayUnit(BigDecimal.valueOf(Double.parseDouble(editTextAmount.getText().toString().replace(",","")))));
+                        textViewAmountCN.setText(NumberToCN.number2CNMontrayUnit(BigDecimal.valueOf(Double.parseDouble(valueStr))));
                     }
                 }
             });
 
             editTextLife = (EditText) findViewById(R.id.life);
 //            editTextLife.setFocusable(false);
-            editTextLife.setOnTouchListener(new View.OnTouchListener() {
+//            editTextLife.setOnTouchListener(new View.OnTouchListener() {
+//                @Override
+//                public boolean onTouch(View v, MotionEvent event) {
+//                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+//                    }
+//                    return true;
+//                }
+//            });
+            editTextLife.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (hasFocus) {
                         setLifeDialog(12);
+
                     }
-                    return true;
                 }
             });
 
@@ -147,15 +189,54 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
 
             editTextDate = (EditText) findViewById(R.id.date);
 //            editTextDate.setFocusable(false);
-            editTextDate.setOnTouchListener(new View.OnTouchListener() {
+//            editTextDate.setOnTouchListener(new View.OnTouchListener() {
+//                @Override
+//                public boolean onTouch(View v, MotionEvent event) {
+//                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+//                    }
+//                    return true;
+//                }
+//            });
+            editTextDate.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (hasFocus) {
                         setDateDialog(new DateTime());
+
                     }
-                    return true;
                 }
             });
+
+
+            editTextAccount.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                    //
+                    // 加分隔符
+                    String text = editTextAccount.getText().toString();
+                    if (!moneyText.equals(text)) {
+                        String word = _String.toCardNumberFormat(editTextAccount);
+                        moneyText = word;
+                        editTextAccount.setText(word);
+                        editTextAccount.setSelection(word.length());
+                    }
+                }
+            });
+
+
+
+
 //            // Set up the login form.
 //            mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
 //            populateAutoComplete();
@@ -411,6 +492,7 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
                         DateTime selectedDateTime = new DateTime(y, m, d, 0, 0, 0);
                         loan.setDate(selectedDateTime);
                         editTextDate.setText(selectedDateTime.toShortDateString());
+                        setFocus(editTextAmount);
                         dialog.dismiss();
                     } catch (Exception e) {
                         _Helper.printException(AddLoanActivity.this, e);
@@ -474,6 +556,7 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
                         int m = npMonth.getValue();
                         loan.setLife(y * 12 + m);
                         editTextLife.setText(lifeInt2String(y, m));
+                        setFocus(editTextAccount);
                         dialog.dismiss();
                     } catch (Exception e) {
                         _Helper.printException(AddLoanActivity.this, e);
@@ -505,6 +588,18 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
             result += month + "个月";
         }
         return result;
+    }
+
+    private void setFocus(View view) {
+        view.setFocusable(true);
+        view.setFocusableInTouchMode(true);
+        view.requestFocus();
+        view.requestFocusFromTouch();
+
+        InputMethodManager imm = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+
+
     }
 }
 
