@@ -22,7 +22,7 @@ public class Loan {
     /**
      * 借款金额
      */
-    private BigDecimal amount;
+    private double amount;
     /**
      * 借款期限，以月为单位。
      */
@@ -40,7 +40,7 @@ public class Loan {
         this.id = id;
     }
 
-    public Loan(UUID id, int type, DateTime date, BigDecimal amount, int life, String account, UUID borrowerId) {
+    public Loan(UUID id, int type, DateTime date, double amount, int life, String account, UUID borrowerId) {
         this.id = id;
         this.type = type;
         this.date = date;
@@ -74,11 +74,11 @@ public class Loan {
         this.date = date;
     }
 
-    public BigDecimal getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(BigDecimal amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 

@@ -18,23 +18,23 @@ public class Borrower {
      */
     private String name;
     /**
-     * 地址：省、市、县、镇、村
-     */
-    private Address address;
-    /**
      * 联系电话
      */
     private String phone;
+    /**
+     * 地址：省、市、县、镇、村
+     */
+    private UUID addressId;
 
     public Borrower(UUID id) {
         this.id = id;
     }
 
-    public Borrower(UUID id, String identity, String name, Address address, String phone) {
+    public Borrower(UUID id, String identity, String name, UUID addressId, String phone) {
         this.id = id;
         this.identity = identity;
         this.name = name;
-        this.address = address;
+        this.addressId = addressId;
         this.phone = phone;
     }
 
@@ -62,12 +62,12 @@ public class Borrower {
         this.name = name;
     }
 
-    public Address getAddress() {
-        return address;
+    public UUID getAddressId() {
+        return addressId;
     }
 
-    public void setAddress(Address address) {
-        this.address = address;
+    public void setAddress(UUID addressId) {
+        this.addressId = addressId;
     }
 
     public String getPhone() {
