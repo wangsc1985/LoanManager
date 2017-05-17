@@ -5,8 +5,13 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
 
@@ -54,6 +59,7 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
 
 
     // 视图
+    private TextInputLayout inputLayoutAmount;
     private AutoCompleteTextView autoCompleteName, autoCompleteProvince, autoCompleteCity, autoCompleteCounty, autoCompleteTown, autoCompleteVillage;
     private EditText editTextType, editTextDate, editTextAmount, editTextLife, editTextAccount, editTextIdentity, editTextPhone;
     private TextView textViewAmountCN;
@@ -84,6 +90,8 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
             loan = new Loan(UUID.randomUUID());
             loan.setBorrowerId(borrower.getId());
             address = new Address(UUID.randomUUID());
+
+            inputLayoutAmount = (TextInputLayout) findViewById(R.id.inputLayout_amount);
 
             editTextType = (EditText) findViewById(R.id.type);
             editTextAmount = (EditText) findViewById(R.id.amount);
@@ -129,11 +137,16 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
                     //
                     // 验证是否为数字
                     try {
-                        if (!valueStr.isEmpty())
+                        if (!valueStr.isEmpty()) {
                             Double.parseDouble(valueStr);
+                        } else {
+                            textViewAmountCN.setTextColor(Color.GRAY);
+                            textViewAmountCN.setVisibility(View.GONE);
+                        }
                     } catch (NumberFormatException e) {
-                        Snackbar.make(editTextDate, "金额必须为数字。", Snackbar.LENGTH_LONG).show();
-                        editTextAmount.setText("");
+                        textViewAmountCN.setVisibility(View.VISIBLE);
+                        textViewAmountCN.setTextColor(Color.rgb(188,0,9));
+                        textViewAmountCN.setText("金额必须为标准数字。");
                         return;
                     }
 
@@ -162,15 +175,6 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
             });
 
             editTextLife = (EditText) findViewById(R.id.life);
-//            editTextLife.setFocusable(false);
-//            editTextLife.setOnTouchListener(new View.OnTouchListener() {
-//                @Override
-//                public boolean onTouch(View v, MotionEvent event) {
-//                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
-//                    }
-//                    return true;
-//                }
-//            });
             editTextLife.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
                 public void onFocusChange(View v, boolean hasFocus) {
@@ -204,15 +208,6 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
             });
 
             editTextDate = (EditText) findViewById(R.id.date);
-//            editTextDate.setFocusable(false);
-//            editTextDate.setOnTouchListener(new View.OnTouchListener() {
-//                @Override
-//                public boolean onTouch(View v, MotionEvent event) {
-//                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
-//                    }
-//                    return true;
-//                }
-//            });
             editTextDate.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
                 public void onFocusChange(View v, boolean hasFocus) {
@@ -225,7 +220,7 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
                                 int year = Integer.parseInt(text.substring(0, text.indexOf("年")));
                                 int month = Integer.parseInt(text.substring(text.indexOf("年") + 1, text.indexOf("月")));
                                 int day = Integer.parseInt(text.substring(text.indexOf("月") + 1, text.indexOf("日")));
-                                setDateDialog(new DateTime(year,month,day));
+                                setDateDialog(new DateTime(year, month, day));
                             } catch (NumberFormatException e) {
                                 setDateDialog(new DateTime());
                             }
@@ -282,6 +277,15 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
                         moneyText = word;
                         editTextPhone.setText(word);
                         editTextPhone.setSelection(word.length());
+                    }
+                }
+            });
+
+            editTextIdentity.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if(!hasFocus&&editTextIdentity.getText().toString().length()==17){
+                        editTextIdentity.setText(editTextIdentity.getText().toString()+"X");
                     }
                 }
             });
@@ -549,16 +553,16 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
                     }
                 }
             });
-            dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    try {
-                        dialog.dismiss();
-                    } catch (Exception e) {
-                        _Helper.printException(AddLoanActivity.this, e);
-                    }
-                }
-            });
+//            dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
+//                @Override
+//                public void onClick(DialogInterface dialog, int which) {
+//                    try {
+//                        dialog.dismiss();
+//                    } catch (Exception e) {
+//                        _Helper.printException(AddLoanActivity.this, e);
+//                    }
+//                }
+//            });
             dialog.show();
         } catch (Exception e) {
             _Helper.printException(AddLoanActivity.this, e);
@@ -612,16 +616,16 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
                     }
                 }
             });
-            dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    try {
-                        dialog.dismiss();
-                    } catch (Exception e) {
-                        _Helper.printException(AddLoanActivity.this, e);
-                    }
-                }
-            });
+//            dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
+//                @Override
+//                public void onClick(DialogInterface dialog, int which) {
+//                    try {
+//                        dialog.dismiss();
+//                    } catch (Exception e) {
+//                        _Helper.printException(AddLoanActivity.this, e);
+//                    }
+//                }
+//            });
             dialog.show();
         } catch (Exception e) {
             _Helper.printException(AddLoanActivity.this, e);
