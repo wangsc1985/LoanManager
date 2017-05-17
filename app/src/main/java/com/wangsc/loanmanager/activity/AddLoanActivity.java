@@ -18,10 +18,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.Editable;
-import android.text.Selection;
-import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.text.method.PasswordTransformationMethod;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,6 +28,7 @@ import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -39,6 +37,7 @@ import java.util.UUID;
 import com.wangsc.loanmanager.R;
 import com.wangsc.loanmanager.fragment.ActionBarFragment;
 import com.wangsc.loanmanager.helper.DateTime;
+import com.wangsc.loanmanager.helper.NumberToCN;
 import com.wangsc.loanmanager.helper._Helper;
 import com.wangsc.loanmanager.helper._String;
 import com.wangsc.loanmanager.model.Address;
@@ -55,8 +54,8 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
 
     // 视图
     private AutoCompleteTextView autoCompleteName, autoCompleteProvince, autoCompleteCity, autoCompleteCounty, autoCompleteTown, autoCompleteVillage;
-    private EditText editTextType, editTextDate, editTextMoney, editTextLife, editTextIdentity, editTextPhone;
-    private TextView textViewMoneyChinese;
+    private EditText editTextType, editTextDate, editTextAmount, editTextLife, editTextIdentity, editTextPhone;
+    private TextView textViewAmountCN;
 
     private Loan loan;
     private Borrower borrower;
@@ -85,9 +84,9 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
             loan.setBorrowerId(borrower.getId());
             address = new Address(UUID.randomUUID());
 
-            textViewMoneyChinese = (TextView) findViewById(R.id.textView_money_chinese);
-            editTextMoney = (EditText) findViewById(R.id.money);
-            editTextMoney.setOnKeyListener(new View.OnKeyListener() {
+            textViewAmountCN = (TextView) findViewById(R.id.textView_money_cn);
+            editTextAmount = (EditText) findViewById(R.id.amount);
+            editTextAmount.setOnKeyListener(new View.OnKeyListener() {
                 @Override
                 public boolean onKey(View v, int keyCode, KeyEvent event) {
                     if (event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -95,7 +94,7 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
                     return false;
                 }
             });
-            editTextMoney.addTextChangedListener(new TextWatcher() {
+            editTextAmount.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -109,21 +108,21 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
                 @Override
                 public void afterTextChanged(Editable s) {
 
-                    String text = editTextMoney.getText().toString();
+                    String text = editTextAmount.getText().toString();
                     if (!moneyText.equals(text)) {
-                        String word = _String.addComma(editTextMoney);
+                        String word = _String.addComma(editTextAmount);
                         moneyText = word;
-                        editTextMoney.setText(word);
-                        editTextMoney.setSelection(word.length());
+                        editTextAmount.setText(word);
+                        editTextAmount.setSelection(word.length());
                     }
 
 
                     if (text.isEmpty()) {
-                        textViewMoneyChinese.setVisibility(View.GONE);
-                        textViewMoneyChinese.setText("");
+                        textViewAmountCN.setVisibility(View.GONE);
+                        textViewAmountCN.setText("");
                     } else {
-                        textViewMoneyChinese.setVisibility(View.VISIBLE);
-                        textViewMoneyChinese.setText(_String.CmycurD(editTextMoney.getText().toString().replace(",","")));
+                        textViewAmountCN.setVisibility(View.VISIBLE);
+                        textViewAmountCN.setText(NumberToCN.number2CNMontrayUnit(BigDecimal.valueOf(Double.parseDouble(editTextAmount.getText().toString().replace(",","")))));
                     }
                 }
             });

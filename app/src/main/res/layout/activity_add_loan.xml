@@ -87,10 +87,10 @@
                     </android.support.design.widget.TextInputLayout>
 
                     <TextView
-                        android:id="@+id/textView_money_chinese"
+                        android:id="@+id/textView_money_cn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
+                        android:layout_gravity="right"
                         android:visibility="gone" />
 
                     <android.support.design.widget.TextInputLayout
@@ -98,7 +98,7 @@
                         android:layout_height="match_parent">
 
                         <EditText
-                            android:id="@+id/money"
+                            android:id="@+id/amount"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="金额"

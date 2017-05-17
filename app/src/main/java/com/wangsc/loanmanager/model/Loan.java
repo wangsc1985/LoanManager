@@ -2,7 +2,7 @@ package com.wangsc.loanmanager.model;
 
 import com.wangsc.loanmanager.helper.DateTime;
 
-import java.util.Date;
+import java.math.BigDecimal;
 import java.util.UUID;
 
 /**
@@ -22,7 +22,7 @@ public class Loan {
     /**
      * 借款金额
      */
-    private double money;
+    private BigDecimal amount;
     /**
      * 借款期限，以月为单位。
      */
@@ -40,11 +40,11 @@ public class Loan {
         this.id = id;
     }
 
-    public Loan(UUID id, int type, DateTime date, double money, int life, String account, UUID borrowerId) {
+    public Loan(UUID id, int type, DateTime date, BigDecimal amount, int life, String account, UUID borrowerId) {
         this.id = id;
         this.type = type;
         this.date = date;
-        this.money = money;
+        this.amount = amount;
         this.life = life;
         this.account = account;
         this.borrowerId = borrowerId;
@@ -74,12 +74,12 @@ public class Loan {
         this.date = date;
     }
 
-    public double getMoney() {
-        return money;
+    public BigDecimal getAmount() {
+        return amount;
     }
 
-    public void setMoney(double money) {
-        this.money = money;
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
     }
 
     public int getLife() {
