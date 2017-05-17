@@ -62,7 +62,6 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
     private TextInputLayout inputLayoutAmount;
     private AutoCompleteTextView autoCompleteName, autoCompleteProvince, autoCompleteCity, autoCompleteCounty, autoCompleteTown, autoCompleteVillage;
     private EditText editTextType, editTextDate, editTextAmount, editTextLife, editTextAccount, editTextIdentity, editTextPhone;
-    private TextView textViewAmountCN;
 
     private Loan loan;
     private Borrower borrower;
@@ -107,7 +106,6 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
             autoCompleteVillage = (AutoCompleteTextView) findViewById(R.id.village);
 
 
-            textViewAmountCN = (TextView) findViewById(R.id.textView_money_cn);
             editTextAmount = (EditText) findViewById(R.id.amount);
             editTextAmount.setOnKeyListener(new View.OnKeyListener() {
                 @Override
@@ -139,14 +137,11 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
                     try {
                         if (!valueStr.isEmpty()) {
                             Double.parseDouble(valueStr);
-                        } else {
-                            textViewAmountCN.setTextColor(Color.GRAY);
-                            textViewAmountCN.setVisibility(View.GONE);
                         }
+                        inputLayoutAmount.setErrorEnabled(false);
                     } catch (NumberFormatException e) {
-                        textViewAmountCN.setVisibility(View.VISIBLE);
-                        textViewAmountCN.setTextColor(Color.rgb(188,0,9));
-                        textViewAmountCN.setText("金额必须为标准数字。");
+                        inputLayoutAmount.setError("金额必须为标准数字。");
+                        inputLayoutAmount.setErrorEnabled(true);
                         return;
                     }
 
@@ -165,11 +160,9 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
                     //
                     // 人民币大写
                     if (text.isEmpty()) {
-                        textViewAmountCN.setVisibility(View.GONE);
-                        textViewAmountCN.setText("");
+                        inputLayoutAmount.setHint("金额");
                     } else {
-                        textViewAmountCN.setVisibility(View.VISIBLE);
-                        textViewAmountCN.setText(NumberToCN.number2CNMontrayUnit(BigDecimal.valueOf(Double.parseDouble(valueStr))));
+                        inputLayoutAmount.setHint("金额（"+NumberToCN.number2CNMontrayUnit(BigDecimal.valueOf(Double.parseDouble(valueStr)))+"）");
                     }
                 }
             });
