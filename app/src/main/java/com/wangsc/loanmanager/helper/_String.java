@@ -11,7 +11,7 @@ public class _String {
 
     public static String touzi_ed_values22 = "";
 
-    public static String toCardNumberFormat(EditText edtext){
+    public static String toPhoneNumberFormat(EditText edtext) {
 
         String valueStr = edtext.getText().toString().replace(" ", "");
 
@@ -20,7 +20,26 @@ public class _String {
 
         StringBuilder result = new StringBuilder();
         int count = 0;
-        for (int i = 0;i<valueStr.length() ; i++) {
+        for (int i = 0; i < valueStr.length(); i++) {
+            count++;
+            result.append(valueStr.charAt(i));
+            if (count == 3 || count == 7)
+                result.append(" ");
+        }
+
+        return result.toString();
+    }
+
+    public static String toCardNumberFormat(EditText edtext) {
+
+        String valueStr = edtext.getText().toString().replace(" ", "");
+
+        if (valueStr.isEmpty())
+            return "";
+
+        StringBuilder result = new StringBuilder();
+        int count = 0;
+        for (int i = 0; i < valueStr.length(); i++) {
             result.append(valueStr.charAt(i));
             if (++count % 4 == 0) {
                 result.append(" ");

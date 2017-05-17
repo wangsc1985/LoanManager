@@ -175,8 +175,23 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
                 @Override
                 public void onFocusChange(View v, boolean hasFocus) {
                     if (hasFocus) {
-                        setLifeDialog(12);
-
+                        String text = editTextLife.getText().toString();
+                        if (text.isEmpty()) {
+                            setLifeDialog(12);
+                        } else {
+                            try {
+                                int month = 0;
+                                if (text.contains("年")) {
+                                    month += 12 * Integer.parseInt(text.substring(0, text.indexOf("年")));
+                                }
+                                if (text.contains("月")) {
+                                    month += Integer.parseInt(text.substring(text.indexOf("年") + 1, text.indexOf("月")));
+                                }
+                                setLifeDialog(month);
+                            } catch (NumberFormatException e) {
+                                setLifeDialog(12);
+                            }
+                        }
                     }
                 }
             });
@@ -201,8 +216,19 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
                 @Override
                 public void onFocusChange(View v, boolean hasFocus) {
                     if (hasFocus) {
-                        setDateDialog(new DateTime());
-
+                        String text = editTextDate.getText().toString();
+                        if (text.isEmpty()) {
+                            setDateDialog(new DateTime());
+                        } else {
+                            try {
+                                int year = Integer.parseInt(text.substring(0, text.indexOf("年")));
+                                int month = Integer.parseInt(text.substring(text.indexOf("年") + 1, text.indexOf("月")));
+                                int day = Integer.parseInt(text.substring(text.indexOf("月") + 1, text.indexOf("日")));
+                                setDateDialog(new DateTime(year,month,day));
+                            } catch (NumberFormatException e) {
+                                setDateDialog(new DateTime());
+                            }
+                        }
                     }
                 }
             });
@@ -233,8 +259,31 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
                     }
                 }
             });
+            editTextPhone.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+                }
 
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                    //
+                    // 加分隔符
+                    String text = editTextPhone.getText().toString();
+                    if (!moneyText.equals(text)) {
+                        String word = _String.toPhoneNumberFormat(editTextPhone);
+                        moneyText = word;
+                        editTextPhone.setText(word);
+                        editTextPhone.setSelection(word.length());
+                    }
+                }
+            });
 
 
 //            // Set up the login form.
@@ -428,8 +477,7 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
 
         try {
             View view = View.inflate(this, R.layout.inflate_dialog_date_picker, null);
-            final AlertDialog dialog = new AlertDialog.Builder(this).setView(view).create();
-            dialog.setTitle("设定借款日期");
+            final AlertDialog dialog = new AlertDialog.Builder(this).setView(view).setTitle("设定借款日期").setCancelable(false).create();
 
             final int year = dateTime.getYear();
             int month = dateTime.getMonth();
@@ -519,8 +567,7 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
 
         try {
             View view = View.inflate(this, R.layout.inflate_dialog_date_picker, null);
-            final AlertDialog dialog = new AlertDialog.Builder(this).setView(view).create();
-            dialog.setTitle("设定借款期限");
+            final AlertDialog dialog = new AlertDialog.Builder(this).setView(view).setTitle("设定借款期限").setCancelable(false).create();
 
             final int year = totalMonth / 12;
             int month = totalMonth % 12;

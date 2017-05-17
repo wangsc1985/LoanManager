@@ -4,9 +4,9 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:focusable="true"
-    android:focusableInTouchMode="true"
     tools:context="com.wangsc.loanmanager.activity.AddLoanActivity">
+    <!--android:focusable="true"-->
+    <!--android:focusableInTouchMode="true"-->
 
     <fragment
         android:id="@+id/fragment"
