@@ -16,7 +16,7 @@ import java.util.UUID;
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final int VERSION = 1;
+    private static final int VERSION = 2;
     private static final String DATABASE_NAME = "hsbank.db";
 
     public DatabaseHelper(Context context) {
@@ -63,11 +63,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.execSQL("create table if not exists address("
                 + "id TEXT PRIMARY KEY,"
-                + "province TEXT,"
-                + "city TEXT,"
-                + "county TEXT,"
-                + "town TEXT,"
-                + "village TEXT)");
+                + "provinceId TEXT,"
+                + "cityId TEXT,"
+                + "countyId TEXT,"
+                + "townId TEXT,"
+                + "villageId TEXT)");
 
         db.execSQL("create table if not exists setting("
                 + "key TEXT PRIMARY KEY,"
@@ -88,6 +88,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String wzId = UUID.randomUUID().toString();
         String ycId = UUID.randomUUID().toString();
         String zwId = UUID.randomUUID().toString();
+
         db.execSQL("insert into addressItem values" +
                 "('" + nxId + "','宁夏','1','" + _Session.UUID_NULL.toString() + "')");
         db.execSQL("insert into addressItem values" +
@@ -162,6 +163,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try {
             switch (oldVersion) {
                 case 1:
+                    db.execSQL("ALTER TABLE address RENAME COLUMN city TO cityId");
+                    db.execSQL("ALTER TABLE address RENAME COLUMN county TO countyId");
+                    db.execSQL("ALTER TABLE address RENAME COLUMN town TO townId");
+                    db.execSQL("ALTER TABLE address RENAME COLUMN village TO villageId");
                 case 2:
             }
         } catch (SQLException e) {

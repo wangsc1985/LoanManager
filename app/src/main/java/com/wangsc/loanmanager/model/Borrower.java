@@ -66,7 +66,7 @@ public class Borrower {
         return addressId;
     }
 
-    public void setAddress(UUID addressId) {
+    public void setAddressId(UUID addressId) {
         this.addressId = addressId;
     }
 

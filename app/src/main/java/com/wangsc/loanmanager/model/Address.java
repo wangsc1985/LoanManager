@@ -8,23 +8,23 @@ import java.util.UUID;
 
 public class Address {
     private UUID id;
-    private UUID province;
-    private UUID city;
-    private UUID county;
-    private UUID town;
-    private UUID village;
+    private UUID provinceId;
+    private UUID cityId;
+    private UUID countyId;
+    private UUID townId;
+    private UUID villageId;
 
     public Address(UUID id) {
         this.id = id;
     }
 
-    public Address(UUID id, UUID province, UUID city, UUID county, UUID town, UUID village) {
-        this.id = id;
-        this.province = province;
-        this.city = city;
-        this.county = county;
-        this.town = town;
-        this.village = village;
+    public Address(UUID id, UUID provinceId, UUID cityId, UUID countyId, UUID townId, UUID village) {
+        this(id);
+        this.provinceId = provinceId;
+        this.cityId = cityId;
+        this.countyId = countyId;
+        this.townId = townId;
+        this.villageId = village;
     }
 
     public UUID getId() {
@@ -35,43 +35,89 @@ public class Address {
         this.id = id;
     }
 
-    public UUID getProvince() {
-        return province;
+    public UUID getProvinceId() {
+        return provinceId;
     }
 
-    public void setProvince(UUID province) {
-        this.province = province;
+    public void setProvinceId(UUID provinceId) {
+        this.provinceId = provinceId;
     }
 
-    public UUID getCity() {
-        return city;
+    public UUID getCityId() {
+        return cityId;
     }
 
-    public void setCity(UUID city) {
-        this.city = city;
+    public void setCityId(UUID cityId) {
+        this.cityId = cityId;
     }
 
-    public UUID getCounty() {
-        return county;
+    public UUID getCountyId() {
+        return countyId;
     }
 
-    public void setCounty(UUID county) {
-        this.county = county;
+    public void setCountyId(UUID countyId) {
+        this.countyId = countyId;
     }
 
-    public UUID getTown() {
-        return town;
+    public UUID getTownId() {
+        return townId;
     }
 
-    public void setTown(UUID town) {
-        this.town = town;
+    public void setTownId(UUID townId) {
+        this.townId = townId;
     }
 
-    public UUID getVillage() {
-        return village;
+    public UUID getVillageId() {
+        return villageId;
     }
 
-    public void setVillage(UUID village) {
-        this.village = village;
+    public void setVillageId(UUID villageId) {
+        this.villageId = villageId;
+    }
+
+    public String getProvince(DataContext dataContext){
+        AddressItem item = dataContext.getAddressItem(provinceId);
+        if(item!=null){
+            return item.getValue();
+        }
+        else{
+            return "NULL";
+        }
+    }
+    public String getCity(DataContext dataContext){
+        AddressItem item = dataContext.getAddressItem(cityId);
+        if(item!=null){
+            return item.getValue();
+        }
+        else{
+            return "NULL";
+        }
+    }
+    public String getCounty(DataContext dataContext){
+        AddressItem item = dataContext.getAddressItem(countyId);
+        if(item!=null){
+            return item.getValue();
+        }
+        else{
+            return "NULL";
+        }
+    }
+    public String getTown(DataContext dataContext){
+        AddressItem item = dataContext.getAddressItem(townId);
+        if(item!=null){
+            return item.getValue();
+        }
+        else{
+            return "NULL";
+        }
+    }
+    public String getVillage(DataContext dataContext){
+        AddressItem item = dataContext.getAddressItem(villageId);
+        if(item!=null){
+            return item.getValue();
+        }
+        else{
+            return "NULL";
+        }
     }
 }

@@ -28,6 +28,7 @@ import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
@@ -45,9 +46,12 @@ import com.wangsc.loanmanager.fragment.ActionBarFragment;
 import com.wangsc.loanmanager.helper.DateTime;
 import com.wangsc.loanmanager.helper.NumberToCN;
 import com.wangsc.loanmanager.helper._Helper;
+import com.wangsc.loanmanager.helper._Session;
 import com.wangsc.loanmanager.helper._String;
 import com.wangsc.loanmanager.model.Address;
+import com.wangsc.loanmanager.model.AddressItem;
 import com.wangsc.loanmanager.model.Borrower;
+import com.wangsc.loanmanager.model.DataContext;
 import com.wangsc.loanmanager.model.Loan;
 
 import static android.Manifest.permission.READ_CONTACTS;
@@ -68,6 +72,11 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
     private Address address;
     private UUID loanGroupId;
 
+
+    private DataContext dataContext;
+    private ArrayAdapter<String> arrayAdapter;
+    List<AddressItem> addressItems;
+
     public static String PARAM_LOAN_GROUP_ID = "LOAN_GROUP_ID";
     private static String moneyText = "";
 
@@ -82,6 +91,8 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
             setContentView(R.layout.activity_add_loan);
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment, ActionBarFragment.newInstance()).commit();
             getSupportActionBar().hide();
+
+            dataContext = new DataContext(this);
 
             loanGroupId = UUID.fromString(getIntent().getStringExtra(PARAM_LOAN_GROUP_ID));
 
@@ -98,12 +109,63 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
             editTextIdentity = (EditText) findViewById(R.id.identity);
             editTextPhone = (EditText) findViewById(R.id.phone);
             autoCompleteName = (AutoCompleteTextView) findViewById(R.id.name);
-            autoCompleteProvince = (AutoCompleteTextView) findViewById(R.id.province);
+//            autoCompleteProvince = (AutoCompleteTextView) findViewById(R.id.province);
             autoCompleteCity = (AutoCompleteTextView) findViewById(R.id.city);
             autoCompleteCounty = (AutoCompleteTextView) findViewById(R.id.county);
             autoCompleteTown = (AutoCompleteTextView) findViewById(R.id.town);
             autoCompleteCity = (AutoCompleteTextView) findViewById(R.id.city);
             autoCompleteVillage = (AutoCompleteTextView) findViewById(R.id.village);
+
+            setFocus(editTextType);
+
+            List<Borrower> list = dataContext.getBorrowers(autoCompleteName.getText().toString());
+            List<String> arr = new ArrayList<>();
+//            for (Borrower ai : list) {
+//                Address address = dataContext.getAddress(ai.getAddressId());
+//                arr.add(ai.getName()+"\n"+address.getProvince(dataContext)+address.getCity(dataContext)+address.getCounty(dataContext)+address.getTown(dataContext)+address.getVillage(dataContext));
+//            }
+            arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, arr);
+            autoCompleteName.setAdapter(arrayAdapter);
+            autoCompleteName.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
+
+            autoCompleteCity.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (hasFocus) {
+                        // 省addressItem
+                        addressItems = dataContext.getAddressItems(_Session.UUID_NULL);
+                        AddressItem item = null;
+                        if (addressItems.size() > 0) {
+                            item = addressItems.get(0);
+                        }
+
+                        // 市addressItemList
+                        addressItems = dataContext.getAddressItems(item.getId());
+                        String[] arr = new String[addressItems.size()];
+                        for (int i=0;i<addressItems.size();i++){
+                            arr[i] = addressItems.get(i).getValue();
+                        }
+                        new AlertDialog.Builder(AddLoanActivity.this).setCancelable(false).setItems(arr, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                AddressItem ai = addressItems.get(which);
+                                autoCompleteCity.setText(ai.getValue());
+                                setFocus(autoCompleteCounty);
+                            }
+                        }).show();
+                    }
+                }
+            });
 
 
             editTextAmount = (EditText) findViewById(R.id.amount);
@@ -162,7 +224,7 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
                     if (text.isEmpty()) {
                         inputLayoutAmount.setHint("金额");
                     } else {
-                        inputLayoutAmount.setHint("金额（"+NumberToCN.number2CNMontrayUnit(BigDecimal.valueOf(Double.parseDouble(valueStr)))+"）");
+                        inputLayoutAmount.setHint("金额（" + NumberToCN.number2CNMontrayUnit(BigDecimal.valueOf(Double.parseDouble(valueStr))) + "）");
                     }
                 }
             });
@@ -277,13 +339,11 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
             editTextIdentity.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
                 public void onFocusChange(View v, boolean hasFocus) {
-                    if(!hasFocus&&editTextIdentity.getText().toString().length()==17){
-                        editTextIdentity.setText(editTextIdentity.getText().toString()+"X");
+                    if (!hasFocus && editTextIdentity.getText().toString().length() == 17) {
+                        editTextIdentity.setText(editTextIdentity.getText().toString() + "X");
                     }
                 }
             });
-
-            setFocus(editTextDate);
 
 //            // Set up the login form.
 //            mEmailView = (AutoCompleteTextView) findViewById(R.id.email);

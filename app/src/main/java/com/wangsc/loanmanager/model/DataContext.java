@@ -25,155 +25,189 @@ public class DataContext {
         dbHelper = new DatabaseHelper(context);
     }
 
-    //region TallyRecord
+    //region Borrower
+    public void addBorrower(Borrower model) {
+        try {
+            //获取数据库对象
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            //使用insert方法向表中插入数据
+            ContentValues values = new ContentValues();
+            values.put("id", model.getId().toString());
+            values.put("identity", model.getIdentity());
+            values.put("name", model.getName());
+            values.put("phone", model.getPhone());
+            values.put("addressId", model.getAddressId().toString());
 
-//    /**
-//     * 增加一条记录
-//     *
-//     * @param tallyRecord 记录对象
-//     */
-//    public void addRecord(TallyRecord tallyRecord) {
-//        try {
-//            //获取数据库对象
-//            SQLiteDatabase db = dbHelper.getWritableDatabase();
-//            //使用insert方法向表中插入数据
-//            ContentValues values = new ContentValues();
-//            values.put("id", tallyRecord.getId().toString());
-//            values.put("start", tallyRecord.getStart().getTimeInMillis());
-//            values.put("interval", tallyRecord.getInterval());
-//            values.put("item", tallyRecord.getItem());
-//            values.put("summary", tallyRecord.getSummary());
-//
-//            //调用方法插入数据
-//            db.insert("record", "id", values);
-//            //关闭SQLiteDatabase对象
-//            db.close();
-//        } catch (Exception e) {
-//            _Helper.printException(context, e);
-//        }
-//    }
-//
-//    /**
-//     * 得到一条record
-//     *
-//     * @param id 记录ID
-//     * @return
-//     */
-//    public TallyRecord getRecord(UUID id) {
-//
-//        try {
-//            //获取数据库对象
-//            SQLiteDatabase db = dbHelper.getReadableDatabase();
-//            //查询获得游标
-//            Cursor cursor = db.query("record", null, "id=?", new String[]{id.toString()}, null, null, null);
-//            //判断游标是否为空
-//            if (cursor.moveToNext()) {
-//                TallyRecord model = new TallyRecord(id);
-//                model.setStart(new DateTime(cursor.getLong(1)));
-//                model.setInterval(cursor.getInt(2));
-//                model.setItem(cursor.getString(3));
-//                model.setSummary(cursor.getString(4));
-//                return model;
-//            }
-//            db.close();
-//        } catch (Exception e) {
-//            _Helper.printException(context, e);
-//        }
-//        return null;
-//    }
-//
-//    /**
-//     * 获取某一天的record。
-//     *
-//     * @param date
-//     * @return
-//     */
-//    public List<TallyRecord> getRecords(DateTime date) {
-//
-//        List<TallyRecord> result = new ArrayList<TallyRecord>();
-//        try {
-//            //获取数据库对象
-//            SQLiteDatabase db = dbHelper.getReadableDatabase();
-//            DateTime startDate = new DateTime(date.getYear(), date.getMonth(), date.getDay());
-//            DateTime endDate = (DateTime) (startDate.clone());
-//            endDate = endDate.addDays(1);
-//            //查询获得游标
-//            Cursor cursor = db.query("record", null, "start>=? and start<?", new String[]{startDate.getTimeInMillis() + "",endDate.getTimeInMillis()+""}, null, null, null);
-//            //判断游标是否为空
-//            while (cursor.moveToNext()) {
-//                TallyRecord model = new TallyRecord(UUID.fromString(cursor.getString(0)));
-//                model.setStart(new DateTime(cursor.getLong(1)));
-//                model.setInterval(cursor.getInt(2));
-//                model.setItem(cursor.getString(3));
-//                model.setSummary(cursor.getString(4));
-//                result.add(model);
-//            }
-//            db.close();
-//        } catch (Exception e) {
-//            _Helper.printException(context, e);
-//        }
-//        return result;
-//    }
-//
-//    /**
-//     * 获取某一时刻的record。
-//     *
-//     * @param timeInmillis
-//     * @return
-//     */
-//    public TallyRecord getRecords(long timeInmillis) {
-//
-//        TallyRecord result = null;
-//        try {
-//            //获取数据库对象
-//            SQLiteDatabase db = dbHelper.getReadableDatabase();
-//            //查询获得游标
-//            Cursor cursor = db.query("record", null, "start=?", new String[]{timeInmillis + ""}, null, null, null);
-//            //判断游标是否为空
-//            while (cursor.moveToNext()) {
-//                result = new TallyRecord(UUID.fromString(cursor.getString(0)));
-//                result.setStart(new DateTime(cursor.getLong(1)));
-//                result.setInterval(cursor.getInt(2));
-//                result.setItem(cursor.getString(3));
-//                result.setSummary(cursor.getString(4));
-//            }
-//            db.close();
-//        } catch (Exception e) {
-//            _Helper.printException(context, e);
-//        }
-//        return result;
-//    }
-//
-//    /**
-//     * 得到所有record
-//     *
-//     * @return
-//     */
-//    public List<TallyRecord> getRecords(int year) {
-//
-//        List<TallyRecord> result = new ArrayList<TallyRecord>();
-//        try {
-//            //获取数据库对象
-//            SQLiteDatabase db = dbHelper.getReadableDatabase();
-//            DateTime startDate = new DateTime(year,0,1);
-//            DateTime endDate = new DateTime(year+1,0,1);
-//            //查询获得游标
-//            Cursor cursor = db.query("record", null, "start>=? AND start<?", new String[]{startDate.getTimeInMillis()+"",endDate.getTimeInMillis()+""}, null, null, "start desc");
-//            //判断游标是否为空
-//            while (cursor.moveToNext()) {
-//                TallyRecord model = new TallyRecord(UUID.fromString(cursor.getString(0)));
-//                model.setStart(new DateTime(cursor.getLong(1)));
-//                model.setInterval(cursor.getInt(2));
-//                model.setItem(cursor.getString(3));
-//                model.setSummary(cursor.getString(4));
-//                result.add(model);
-//            }
-//            db.close();
-//        } catch (Exception e) {
-//            _Helper.printException(context, e);
-//        }
-//        return result;
-//    }
+            //调用方法插入数据
+            db.insert("borrower", "id", values);
+            //关闭SQLiteDatabase对象
+            db.close();
+        } catch (Exception e) {
+            _Helper.printException(context, e);
+        }
+    }
+
+    //
+    public Borrower getBorrower(UUID id) {
+
+        try {
+            //获取数据库对象
+            SQLiteDatabase db = dbHelper.getReadableDatabase();
+            //查询获得游标
+            Cursor cursor = db.query("borrower", null, "id=?", new String[]{id.toString()}, null, null, null);
+            //判断游标是否为空
+            if (cursor.moveToNext()) {
+                Borrower model = new Borrower(id);
+                model.setIdentity(cursor.getString(1));
+                model.setName(cursor.getString(2));
+                model.setPhone(cursor.getString(3));
+                model.setAddressId(UUID.fromString(cursor.getString(4)));
+                return model;
+            }
+            db.close();
+        } catch (Exception e) {
+            _Helper.printException(context, e);
+        }
+        return null;
+    }
+
+    public List<Borrower> getBorrowers(String likeWhat) {
+        List<Borrower> result = new ArrayList<Borrower>();
+        try {
+            //获取数据库对象
+            SQLiteDatabase db = dbHelper.getReadableDatabase();
+            //查询获得游标
+            Cursor cursor = db.query("borrower", null, "name like ?", new String[]{"%"+likeWhat+"%"}, null, null, null);
+            //判断游标是否为空
+            while (cursor.moveToNext()) {
+                Borrower model = new Borrower(UUID.fromString(cursor.getString(0)));
+                model.setIdentity(cursor.getString(1));
+                model.setName(cursor.getString(2));
+                model.setPhone(cursor.getString(3));
+                model.setAddressId(UUID.fromString(cursor.getString(4)));
+                result.add(model);
+            }
+            db.close();
+        } catch (Exception e) {
+            _Helper.printException(context, e);
+        }
+        return result;
+    }
+    //endregion
+
+    //region Address
+    public void addAddress(Address model) {
+        try {
+            //获取数据库对象
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            //使用insert方法向表中插入数据
+            ContentValues values = new ContentValues();
+            values.put("id", model.getId().toString());
+            values.put("provinceId", model.getProvinceId().toString());
+            values.put("cityId", model.getCityId().toString());
+            values.put("countyId", model.getCountyId().toString());
+            values.put("townId", model.getTownId().toString());
+            values.put("villageId", model.getVillageId().toString());
+
+            //调用方法插入数据
+            db.insert("address", "id", values);
+            //关闭SQLiteDatabase对象
+            db.close();
+        } catch (Exception e) {
+            _Helper.printException(context, e);
+        }
+    }
+
+    public Address getAddress(UUID id) {
+        try {
+            //获取数据库对象
+            SQLiteDatabase db = dbHelper.getReadableDatabase();
+            //查询获得游标
+            Cursor cursor = db.query("address", null, "id==?", new String[]{id.toString()}, null, null, null);
+            //判断游标是否为空
+            while (cursor.moveToNext()) {
+                Address model = new Address(UUID.fromString(cursor.getString(0)));
+                model.setProvinceId(UUID.fromString(cursor.getString(1)));
+                model.setCityId(UUID.fromString(cursor.getString(2)));
+                model.setCountyId(UUID.fromString(cursor.getString(3)));
+                model.setTownId(UUID.fromString(cursor.getString(4)));
+                model.setVillageId(UUID.fromString(cursor.getString(5)));
+                return model;
+            }
+            db.close();
+        } catch (Exception e) {
+            _Helper.printException(context, e);
+        }
+        return null;
+    }
+    //endregion
+
+    //region AddressItem
+    public void addAddressItem(AddressItem model) {
+        try {
+            //获取数据库对象
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            //使用insert方法向表中插入数据
+            ContentValues values = new ContentValues();
+            values.put("id", model.getId().toString());
+            values.put("value", model.getValue());
+            values.put("level", model.getLevel());
+            values.put("parentId", model.getParentId().toString());
+
+            //调用方法插入数据
+            db.insert("addressItem", "id", values);
+            //关闭SQLiteDatabase对象
+            db.close();
+        } catch (Exception e) {
+            _Helper.printException(context, e);
+        }
+    }
+
+    public AddressItem getAddressItem(UUID id) {
+        try {
+            //获取数据库对象
+            SQLiteDatabase db = dbHelper.getReadableDatabase();
+            //查询获得游标
+            Cursor cursor = db.query("addressItem", null, "id==?", new String[]{id.toString()}, null, null, null);
+            //判断游标是否为空
+            while (cursor.moveToNext()) {
+                AddressItem model = new AddressItem(UUID.fromString(cursor.getString(0)));
+                model.setValue(cursor.getString(1));
+                model.setLevel(cursor.getInt(2));
+                model.setParentId(UUID.fromString(cursor.getString(3)));
+                return model;
+            }
+            db.close();
+        } catch (Exception e) {
+            _Helper.printException(context, e);
+        }
+        return null;
+    }
+    public List<AddressItem> getAddressItems(UUID parentId) {
+        List<AddressItem> result = new ArrayList<AddressItem>();
+        try {
+            //获取数据库对象
+            SQLiteDatabase db = dbHelper.getReadableDatabase();
+            //查询获得游标
+            Cursor cursor = db.query("addressItem", null, "parentId==?", new String[]{parentId.toString()}, null, null, null);
+            //判断游标是否为空
+            while (cursor.moveToNext()) {
+                AddressItem model = new AddressItem(UUID.fromString(cursor.getString(0)));
+                model.setValue(cursor.getString(1));
+                model.setLevel(cursor.getInt(2));
+                model.setParentId(UUID.fromString(cursor.getString(3)));
+                result.add(model);
+            }
+            db.close();
+        } catch (Exception e) {
+            _Helper.printException(context, e);
+        }
+        return result;
+    }
+    //endregion
+
+
+
 //
 //    public void updateRecord(TallyRecord tallyRecord) {
 //
@@ -211,7 +245,6 @@ public class DataContext {
 //            _Helper.printException(context, e);
 //        }
 //    }
-    //endregion
 
     //region RunLog
     public List<RunLog> getRunLogs() {
@@ -305,11 +338,11 @@ public class DataContext {
         return null;
     }
 
-    public Setting getSetting(Setting.KEYS key, Object defaultValue){
+    public Setting getSetting(Setting.KEYS key, Object defaultValue) {
         Setting setting = getSetting(key);
         if (setting == null) {
             this.addSetting(key, defaultValue);
-            setting = new Setting(key.toString(),defaultValue.toString());
+            setting = new Setting(key.toString(), defaultValue.toString());
             return setting;
         }
         return setting;
@@ -364,7 +397,7 @@ public class DataContext {
         Cursor cursor = db.query("setting", null, null, null, null, null, null);
         //判断游标是否为空
         while (cursor.moveToNext()) {
-            Setting setting = new Setting( cursor.getString(0), cursor.getString(1));
+            Setting setting = new Setting(cursor.getString(0), cursor.getString(1));
             result.add(setting);
         }
         return result;
