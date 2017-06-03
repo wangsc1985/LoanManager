@@ -1,5 +1,6 @@
 package com.wangsc.loanmanager.model;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -7,6 +8,7 @@ import java.util.UUID;
  */
 
 public class AddressItem {
+
     private UUID id;
     /**
      * 地址段名称，比如贺兰、银川等。
@@ -20,6 +22,31 @@ public class AddressItem {
      * 上一级ID，比如山东省德州市武城县，武城县的上一级是德州市，德州市的上一级是山东省。
      */
     private UUID parentId;
+
+    private AddressItem parent;
+
+    private List<AddressItem> childs;
+    private boolean isCascadeLoaded = false;
+
+    public void cascadeLoad(DataContext dataContext) {
+        if (level != 1)
+            parent = dataContext.getAddressItem(parentId);
+        if (level >= 5)
+            childs = dataContext.getAddressItems(id);
+        isCascadeLoaded = true;
+    }
+
+    public AddressItem getParent() {
+        return parent;
+    }
+
+    public List<AddressItem> getChilds() {
+        return childs;
+    }
+
+    public boolean isCascadeLoaded() {
+        return isCascadeLoaded;
+    }
 
     public AddressItem(UUID id) {
         this.id = id;
@@ -63,4 +90,6 @@ public class AddressItem {
     public void setParentId(UUID parentId) {
         this.parentId = parentId;
     }
+
+
 }

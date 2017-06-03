@@ -16,7 +16,7 @@ import java.util.UUID;
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final int VERSION = 2;
+    private static final int VERSION = 1;
     private static final String DATABASE_NAME = "hsbank.db";
 
     public DatabaseHelper(Context context) {
@@ -40,7 +40,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + "identity TEXT,"
                 + "name TEXT,"
                 + "phone TEXT,"
-                + "addressId TEXT)");
+                + "address TEXT)");
 
         db.execSQL("create table if not exists loan("
                 + "id TEXT PRIMARY KEY,"
@@ -61,14 +61,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + "level INTEGER,"
                 + "parentId TEXT)");
 
-        db.execSQL("create table if not exists address("
-                + "id TEXT PRIMARY KEY,"
-                + "provinceId TEXT,"
-                + "cityId TEXT,"
-                + "countyId TEXT,"
-                + "townId TEXT,"
-                + "villageId TEXT)");
-
         db.execSQL("create table if not exists setting("
                 + "key TEXT PRIMARY KEY,"
                 + "value TEXT)");
@@ -82,12 +74,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private void insertData(SQLiteDatabase db) {
+
+
+
         String nxId = UUID.randomUUID().toString();
         String gyId = UUID.randomUUID().toString();
         String szsId = UUID.randomUUID().toString();
         String wzId = UUID.randomUUID().toString();
         String ycId = UUID.randomUUID().toString();
         String zwId = UUID.randomUUID().toString();
+
+        String hlId = UUID.randomUUID().toString();
 
         db.execSQL("insert into addressItem values" +
                 "('" + nxId + "','宁夏','1','" + _Session.UUID_NULL.toString() + "')");
@@ -110,7 +107,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("insert into addressItem values" +
                 "('" + UUID.randomUUID().toString() + "','西夏区','3','" + ycId + "')");
         db.execSQL("insert into addressItem values" +
-                "('" + UUID.randomUUID().toString() + "','贺兰县','3','" + ycId + "')");
+                "('" + hlId + "','贺兰县','3','" + ycId + "')");
         db.execSQL("insert into addressItem values" +
                 "('" + UUID.randomUUID().toString() + "','永宁县','3','" + ycId + "')");
         db.execSQL("insert into addressItem values" +
@@ -155,6 +152,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "('" + UUID.randomUUID().toString() + "','沙坡头区','3','" + zwId + "')");
         db.execSQL("insert into addressItem values" +
                 "('" + UUID.randomUUID().toString() + "','中宁县','3','" + zwId + "')");
+
+
+        db.execSQL("insert into borrower values" +
+                "('" + UUID.randomUUID().toString() + "','965889544522145525','尼古拉斯','156544785569689','宁夏银川市贺兰县西岗镇永乐二队')");
+
     }
 
     @Override
@@ -163,10 +165,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try {
             switch (oldVersion) {
                 case 1:
-                    db.execSQL("ALTER TABLE address RENAME COLUMN city TO cityId");
-                    db.execSQL("ALTER TABLE address RENAME COLUMN county TO countyId");
-                    db.execSQL("ALTER TABLE address RENAME COLUMN town TO townId");
-                    db.execSQL("ALTER TABLE address RENAME COLUMN village TO villageId");
                 case 2:
             }
         } catch (SQLException e) {

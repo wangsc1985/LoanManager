@@ -2,6 +2,7 @@ package com.wangsc.loanmanager.activity;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -19,7 +20,7 @@ import com.wangsc.loanmanager.fragment.HomeFragment;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
 
     // 视图变量
     private ViewPager mViewPager;
@@ -29,11 +30,15 @@ public class MainActivity extends AppCompatActivity{
     private List<Fragment> fragmentList;
     private ViewPagerAdapter mViewPagerAdapter;
 
+    /**
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         try {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_main);
+
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment, ActionBarFragment.newInstance()).commit();
 
             getSupportActionBar().hide();
@@ -69,7 +74,7 @@ public class MainActivity extends AppCompatActivity{
 
                 @Override
                 public void onPageSelected(int position) {
-                    for(int i=0;i<navigation.getMenu().size();i++){
+                    for (int i = 0; i < navigation.getMenu().size(); i++) {
                         navigation.getMenu().getItem(i).setChecked(false);
                     }
                     navigation.getMenu().getItem(position).setChecked(true);
@@ -92,7 +97,7 @@ public class MainActivity extends AppCompatActivity{
 
 
         } catch (Exception e) {
-            Snackbar.make(findViewById(R.id.container),e.getMessage(),Snackbar.LENGTH_LONG);
+            Snackbar.make(findViewById(R.id.container), e.getMessage(), Snackbar.LENGTH_LONG);
         }
     }
 

@@ -2,27 +2,21 @@ package com.wangsc.loanmanager.activity;
 
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.provider.CalendarContract;
-import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
-
+import android.content.Context;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Loader;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
-
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -33,7 +27,19 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.NumberPicker;
-import android.widget.TextView;
+
+import com.wangsc.loanmanager.R;
+import com.wangsc.loanmanager.dialog.AreaSlelectorDialogFragment;
+import com.wangsc.loanmanager.dialog.BasicDialogFragment;
+import com.wangsc.loanmanager.fragment.ActionBarFragment;
+import com.wangsc.loanmanager.helper.DateTime;
+import com.wangsc.loanmanager.helper.NumberToCN;
+import com.wangsc.loanmanager.helper._Helper;
+import com.wangsc.loanmanager.helper._String;
+import com.wangsc.loanmanager.model.AddressItem;
+import com.wangsc.loanmanager.model.Borrower;
+import com.wangsc.loanmanager.model.DataContext;
+import com.wangsc.loanmanager.model.Loan;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -41,35 +47,20 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
-import com.wangsc.loanmanager.R;
-import com.wangsc.loanmanager.fragment.ActionBarFragment;
-import com.wangsc.loanmanager.helper.DateTime;
-import com.wangsc.loanmanager.helper.NumberToCN;
-import com.wangsc.loanmanager.helper._Helper;
-import com.wangsc.loanmanager.helper._Session;
-import com.wangsc.loanmanager.helper._String;
-import com.wangsc.loanmanager.model.Address;
-import com.wangsc.loanmanager.model.AddressItem;
-import com.wangsc.loanmanager.model.Borrower;
-import com.wangsc.loanmanager.model.DataContext;
-import com.wangsc.loanmanager.model.Loan;
-
 import static android.Manifest.permission.READ_CONTACTS;
 
 /**
  * A login screen that offers login via email/password.
  */
-public class AddLoanActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
-
+public class AddLoanActivity extends AppCompatActivity implements LoaderCallbacks<Cursor>, AreaSlelectorDialogFragment.WheelChangedListener {
 
     // 视图
     private TextInputLayout inputLayoutAmount;
-    private AutoCompleteTextView autoCompleteName, autoCompleteProvince, autoCompleteCity, autoCompleteCounty, autoCompleteTown, autoCompleteVillage;
-    private EditText editTextType, editTextDate, editTextAmount, editTextLife, editTextAccount, editTextIdentity, editTextPhone;
+    private AutoCompleteTextView autoCompleteName;
+    private EditText editTextType, editTextDate, editTextAmount, editTextLife, editTextAccount, editTextIdentity, editTextAddressArea, editTextAddressDetails, editTextPhone;
 
     private Loan loan;
     private Borrower borrower;
-    private Address address;
     private UUID loanGroupId;
 
 
@@ -83,12 +74,12 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
 
     private static final int REQUEST_READ_CONTACTS = 114;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         try {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_add_loan);
+
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment, ActionBarFragment.newInstance()).commit();
             getSupportActionBar().hide();
 
@@ -99,7 +90,6 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
             borrower = new Borrower(UUID.randomUUID());
             loan = new Loan(UUID.randomUUID());
             loan.setBorrowerId(borrower.getId());
-            address = new Address(UUID.randomUUID());
 
             inputLayoutAmount = (TextInputLayout) findViewById(R.id.inputLayout_amount);
 
@@ -107,23 +97,43 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
             editTextAmount = (EditText) findViewById(R.id.amount);
             editTextAccount = (EditText) findViewById(R.id.account);
             editTextIdentity = (EditText) findViewById(R.id.identity);
+            editTextAddressArea = (EditText) findViewById(R.id.address_area);
+            editTextAddressDetails = (EditText) findViewById(R.id.address_details);
             editTextPhone = (EditText) findViewById(R.id.phone);
             autoCompleteName = (AutoCompleteTextView) findViewById(R.id.name);
 //            autoCompleteProvince = (AutoCompleteTextView) findViewById(R.id.province);
-            autoCompleteCity = (AutoCompleteTextView) findViewById(R.id.city);
-            autoCompleteCounty = (AutoCompleteTextView) findViewById(R.id.county);
-            autoCompleteTown = (AutoCompleteTextView) findViewById(R.id.town);
-            autoCompleteCity = (AutoCompleteTextView) findViewById(R.id.city);
-            autoCompleteVillage = (AutoCompleteTextView) findViewById(R.id.village);
 
             setFocus(editTextType);
 
-            List<Borrower> list = dataContext.getBorrowers(autoCompleteName.getText().toString());
-            List<String> arr = new ArrayList<>();
-//            for (Borrower ai : list) {
-//                Address address = dataContext.getAddress(ai.getAddressId());
-//                arr.add(ai.getName()+"\n"+address.getProvince(dataContext)+address.getCity(dataContext)+address.getCounty(dataContext)+address.getTown(dataContext)+address.getVillage(dataContext));
-//            }
+            final List<String> arr = new ArrayList<>();
+            arr.add("尼古拉斯");
+            arr.add("王艳");
+            arr.add("王世超");
+            arr.add("张秋英");
+            autoCompleteName.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+//                    List<Borrower> list = dataContext.getBorrowers(autoCompleteName.getText().toString());
+//                    arr.clear();
+//                    for (Borrower ai : list) {
+//                        String info = ai.getName() + "\n" + ai.getAddress();
+//                        Log.w("wangsc",info);
+//                        arr.add(info);
+//                    }
+//                    arrayAdapter.notifyDataSetChanged();
+//                    autoCompleteName.setAdapter(arrayAdapter);
+                }
+            });
             arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, arr);
             autoCompleteName.setAdapter(arrayAdapter);
             autoCompleteName.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -135,35 +145,6 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
                 @Override
                 public void onNothingSelected(AdapterView<?> parent) {
 
-                }
-            });
-
-            autoCompleteCity.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View v, boolean hasFocus) {
-                    if (hasFocus) {
-                        // 省addressItem
-                        addressItems = dataContext.getAddressItems(_Session.UUID_NULL);
-                        AddressItem item = null;
-                        if (addressItems.size() > 0) {
-                            item = addressItems.get(0);
-                        }
-
-                        // 市addressItemList
-                        addressItems = dataContext.getAddressItems(item.getId());
-                        String[] arr = new String[addressItems.size()];
-                        for (int i=0;i<addressItems.size();i++){
-                            arr[i] = addressItems.get(i).getValue();
-                        }
-                        new AlertDialog.Builder(AddLoanActivity.this).setCancelable(false).setItems(arr, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                AddressItem ai = addressItems.get(which);
-                                autoCompleteCity.setText(ai.getValue());
-                                setFocus(autoCompleteCounty);
-                            }
-                        }).show();
-                    }
                 }
             });
 
@@ -259,6 +240,16 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
             editTextLife.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                }
+            });
+
+            editTextAddressArea.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (hasFocus) {
+                        BasicDialogFragment asdf = new AreaSlelectorDialogFragment();
+                        asdf.show(getSupportFragmentManager(), "选择地区");
+                    }
                 }
             });
 
@@ -520,6 +511,12 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
         autoCompleteName.setAdapter(adapter);
     }
 
+    @Override
+    public void onWheelChanged(String province, String city, String district) {
+        editTextAddressArea.setText(province + " " + city + " " + district);
+        setFocus(editTextAddressDetails);
+    }
+
 
     private interface ProfileQuery {
         String[] PROJECTION = {
@@ -669,21 +666,12 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
                     }
                 }
             });
-//            dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
-//                @Override
-//                public void onClick(DialogInterface dialog, int which) {
-//                    try {
-//                        dialog.dismiss();
-//                    } catch (Exception e) {
-//                        _Helper.printException(AddLoanActivity.this, e);
-//                    }
-//                }
-//            });
             dialog.show();
         } catch (Exception e) {
             _Helper.printException(AddLoanActivity.this, e);
         }
     }
+
 
     private String lifeInt2String(int year, int month) {
         String result = "";
@@ -703,9 +691,8 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
         view.requestFocusFromTouch();
 
         InputMethodManager imm = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
-
-
+        if (!imm.isActive(view))
+            imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
     }
 }
 

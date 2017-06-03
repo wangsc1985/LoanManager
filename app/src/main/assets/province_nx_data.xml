@@ -1,0 +1,36 @@
+<root>
+  <province name="宁夏回族自治区">
+    <city name="银川市">
+      <district name="金凤区" zipcode="750000" />
+      <district name="兴庆区" zipcode="750000" />
+      <district name="西夏区" zipcode="750000" />
+      <district name="贺兰县" zipcode="750000" />
+      <district name="永宁县" zipcode="750000" />
+      <district name="灵武市" zipcode="750000" />
+    </city>
+    <city name="石嘴山市">
+      <district name="大武口区" zipcode="753000" />
+      <district name="惠农区" zipcode="753000" />
+      <district name="平罗县" zipcode="753000" />
+    </city>
+    <city name="吴忠市">
+      <district name="利通区" zipcode="751100" />
+      <district name="青铜峡市" zipcode="751100" />
+      <district name="同心县" zipcode="751100" />
+      <district name="盐池县" zipcode="751100" />
+      <district name="红寺堡区" zipcode="751100" />
+    </city>
+    <city name="中卫市">
+      <district name="海原县" zipcode="751700" />
+      <district name="沙坡头区" zipcode="751700" />
+      <district name="中宁县" zipcode="751700" />
+    </city>
+    <city name="固原市">
+      <district name="泾源县" zipcode="756000" />
+      <district name="隆德县" zipcode="756000" />
+      <district name="彭阳县" zipcode="756000" />
+      <district name="西吉县" zipcode="756000" />
+      <district name="原州区" zipcode="756000" />
+    </city>
+  </province>
+</root>

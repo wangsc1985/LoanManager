@@ -24,17 +24,17 @@ public class Borrower {
     /**
      * 地址：省、市、县、镇、村
      */
-    private UUID addressId;
+    private String address;
 
     public Borrower(UUID id) {
         this.id = id;
     }
 
-    public Borrower(UUID id, String identity, String name, UUID addressId, String phone) {
+    public Borrower(UUID id, String identity, String name, String address, String phone) {
         this.id = id;
         this.identity = identity;
         this.name = name;
-        this.addressId = addressId;
+        this.address = address;
         this.phone = phone;
     }
 
@@ -62,12 +62,12 @@ public class Borrower {
         this.name = name;
     }
 
-    public UUID getAddressId() {
-        return addressId;
+    public String getAddress() {
+        return address;
     }
 
-    public void setAddressId(UUID addressId) {
-        this.addressId = addressId;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getPhone() {

@@ -36,7 +36,7 @@ public class DataContext {
             values.put("identity", model.getIdentity());
             values.put("name", model.getName());
             values.put("phone", model.getPhone());
-            values.put("addressId", model.getAddressId().toString());
+            values.put("address", model.getAddress());
 
             //调用方法插入数据
             db.insert("borrower", "id", values);
@@ -61,7 +61,7 @@ public class DataContext {
                 model.setIdentity(cursor.getString(1));
                 model.setName(cursor.getString(2));
                 model.setPhone(cursor.getString(3));
-                model.setAddressId(UUID.fromString(cursor.getString(4)));
+                model.setAddress(cursor.getString(4));
                 return model;
             }
             db.close();
@@ -84,7 +84,7 @@ public class DataContext {
                 model.setIdentity(cursor.getString(1));
                 model.setName(cursor.getString(2));
                 model.setPhone(cursor.getString(3));
-                model.setAddressId(UUID.fromString(cursor.getString(4)));
+                model.setAddress(cursor.getString(4));
                 result.add(model);
             }
             db.close();
@@ -92,53 +92,6 @@ public class DataContext {
             _Helper.printException(context, e);
         }
         return result;
-    }
-    //endregion
-
-    //region Address
-    public void addAddress(Address model) {
-        try {
-            //获取数据库对象
-            SQLiteDatabase db = dbHelper.getWritableDatabase();
-            //使用insert方法向表中插入数据
-            ContentValues values = new ContentValues();
-            values.put("id", model.getId().toString());
-            values.put("provinceId", model.getProvinceId().toString());
-            values.put("cityId", model.getCityId().toString());
-            values.put("countyId", model.getCountyId().toString());
-            values.put("townId", model.getTownId().toString());
-            values.put("villageId", model.getVillageId().toString());
-
-            //调用方法插入数据
-            db.insert("address", "id", values);
-            //关闭SQLiteDatabase对象
-            db.close();
-        } catch (Exception e) {
-            _Helper.printException(context, e);
-        }
-    }
-
-    public Address getAddress(UUID id) {
-        try {
-            //获取数据库对象
-            SQLiteDatabase db = dbHelper.getReadableDatabase();
-            //查询获得游标
-            Cursor cursor = db.query("address", null, "id==?", new String[]{id.toString()}, null, null, null);
-            //判断游标是否为空
-            while (cursor.moveToNext()) {
-                Address model = new Address(UUID.fromString(cursor.getString(0)));
-                model.setProvinceId(UUID.fromString(cursor.getString(1)));
-                model.setCityId(UUID.fromString(cursor.getString(2)));
-                model.setCountyId(UUID.fromString(cursor.getString(3)));
-                model.setTownId(UUID.fromString(cursor.getString(4)));
-                model.setVillageId(UUID.fromString(cursor.getString(5)));
-                return model;
-            }
-            db.close();
-        } catch (Exception e) {
-            _Helper.printException(context, e);
-        }
-        return null;
     }
     //endregion
 
