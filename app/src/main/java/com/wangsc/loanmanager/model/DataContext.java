@@ -93,6 +93,28 @@ public class DataContext {
         }
         return result;
     }
+    public List<Borrower> getBorrowers() {
+        List<Borrower> result = new ArrayList<Borrower>();
+        try {
+            //获取数据库对象
+            SQLiteDatabase db = dbHelper.getReadableDatabase();
+            //查询获得游标
+            Cursor cursor = db.query("borrower", null,null, null, null, null, null);
+            //判断游标是否为空
+            while (cursor.moveToNext()) {
+                Borrower model = new Borrower(UUID.fromString(cursor.getString(0)));
+                model.setIdentity(cursor.getString(1));
+                model.setName(cursor.getString(2));
+                model.setPhone(cursor.getString(3));
+                model.setAddress(cursor.getString(4));
+                result.add(model);
+            }
+            db.close();
+        } catch (Exception e) {
+            _Helper.printException(context, e);
+        }
+        return result;
+    }
     //endregion
 
     //region AddressItem

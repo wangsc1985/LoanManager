@@ -155,7 +155,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
         db.execSQL("insert into borrower values" +
-                "('" + UUID.randomUUID().toString() + "','965889544522145525','尼古拉斯','156544785569689','宁夏银川市贺兰县西岗镇永乐二队')");
+                "('" + UUID.randomUUID().toString() + "','965889544522145525','王世超','156544785569689','宁夏银川市贺兰县西岗镇永乐二队')");
+        db.execSQL("insert into borrower values" +
+                "('" + UUID.randomUUID().toString() + "','965889544522145525','王燕','156544785569689','宁夏银川市贺兰县西岗镇永乐二队')");
+        db.execSQL("insert into borrower values" +
+                "('" + UUID.randomUUID().toString() + "','965889544522145525','张德龙','156544785569689','宁夏银川市贺兰县西岗镇永乐二队')");
 
     }
 
