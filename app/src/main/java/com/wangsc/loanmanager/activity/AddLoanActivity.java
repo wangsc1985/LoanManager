@@ -289,6 +289,11 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
 
                 @Override
                 public void afterTextChanged(Editable s) {
+                    if (s.length() > 0) {
+                        editTextAccount.getPaint().setFakeBoldText(true);
+                    } else {
+                        editTextAccount.getPaint().setFakeBoldText(false);
+                    }
 
                     //
                     // 加分隔符
@@ -298,6 +303,35 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
                         moneyText = word;
                         editTextAccount.setText(word);
                         editTextAccount.setSelection(word.length());
+                    }
+                }
+            });
+
+            editTextIdentity.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    if (s.length() > 0) {
+                        editTextIdentity.getPaint().setFakeBoldText(true);
+                    } else {
+                        editTextIdentity.getPaint().setFakeBoldText(false);
+                    }
+                    // 加分隔符
+                    String text = editTextIdentity.getText().toString();
+                    if (!moneyText.equals(text)) {
+                        String word = _String.toIdentityFormat(editTextIdentity);
+                        moneyText = word;
+                        editTextIdentity.setText(word);
+                        editTextIdentity.setSelection(word.length());
                     }
                 }
             });
@@ -314,6 +348,11 @@ public class AddLoanActivity extends AppCompatActivity implements LoaderCallback
 
                 @Override
                 public void afterTextChanged(Editable s) {
+                    if (s.length() > 0) {
+                        editTextPhone.getPaint().setFakeBoldText(true);
+                    } else {
+                        editTextPhone.getPaint().setFakeBoldText(false);
+                    }
 
                     //
                     // 加分隔符

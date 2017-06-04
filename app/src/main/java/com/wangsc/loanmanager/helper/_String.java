@@ -22,9 +22,27 @@ public class _String {
         int count = 0;
         for (int i = 0; i < valueStr.length(); i++) {
             count++;
-            result.append(valueStr.charAt(i));
-            if (count == 3 || count == 7)
+            if (count == 4 || count == 8)
                 result.append(" ");
+            result.append(valueStr.charAt(i));
+        }
+
+        return result.toString();
+    }
+    public static String toIdentityFormat(EditText edtext) {
+
+        String valueStr = edtext.getText().toString().replace(" ", "");
+
+        if (valueStr.isEmpty())
+            return "";
+
+        StringBuilder result = new StringBuilder();
+        int count = 0;
+        for (int i = 0; i < valueStr.length(); i++) {
+            count++;
+            if (count == 7 || count == 11 || count == 15)
+                result.append(" ");
+            result.append(valueStr.charAt(i));
         }
 
         return result.toString();
@@ -40,10 +58,10 @@ public class _String {
         StringBuilder result = new StringBuilder();
         int count = 0;
         for (int i = 0; i < valueStr.length(); i++) {
-            result.append(valueStr.charAt(i));
-            if (++count % 4 == 0) {
+            if (++count % 4 == 1 && count != 1) {
                 result.append(" ");
             }
+            result.append(valueStr.charAt(i));
         }
 
         return result.toString();
